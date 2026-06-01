@@ -58,7 +58,6 @@ export const TECH_MAP: Record<string, TechDef> = {
   'ZPL (Zebra Printing Language)':  { color: '#FF8C00', label: 'ZPL' },
   'ZPL':                            { color: '#FF8C00', label: 'ZPL' },
   'Pinecone':                       { color: '#0F9D58', label: 'Pin' },
-  'Gemini':                         { color: '#8B5CF6', label: '✦' },
   'Grok':                           { color: '#888888', label: 'Gk' },
   'Google Fit API':                 { color: '#4285F4', label: 'GF' },
   'Zego Cloud':                     { color: '#1890FF', label: 'ZG' },
