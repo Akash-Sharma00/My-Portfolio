@@ -238,6 +238,39 @@
           "featured": true
         },
         {
+          "id": "prayog-api-docs",
+          "name": "Prayog API Playground & Docs",
+          "company": "BotAi Solutions",
+          "type": "Developer Tool",
+          "summary": "Interactive API documentation and live playground for the Prayog logistics platform — partners can browse endpoints, test requests, and integrate without ever opening Postman.",
+          "description": "Built the full developer documentation site for the Prayog SaaS platform, live at docs.innofulfill.com.\n\nThe site combines a structured API reference with an interactive playground — developers can authenticate, pick an endpoint, fill parameters, and fire a real request directly from the browser. Every response is shown inline with proper schema documentation alongside it.\n\nCovers the complete API surface: authentication flows, order creation, tracking, webhook payloads, bulk operations, and partner management. Also maintains the legacy API reference so older integrations don't break.",
+          "impact": "Live interactive docs — zero Postman required",
+          "impactDetail": "Partners can explore and test the full API from the browser",
+          "tech": ["OpenAPI / Swagger", "Scalar", "Node.js", "Markdown"],
+          "features": [
+            "Interactive API playground — test live requests from the browser",
+            "Full endpoint reference: auth, orders, tracking, webhooks",
+            "Request & response schema with examples",
+            "Authentication guide with code samples",
+            "Webhook event documentation with full payloads",
+            "Legacy API reference preserved for older integrations",
+            "Clean, mobile-responsive layout"
+          ],
+          "links": {
+            "live": "https://docs.innofulfill.com/"
+          },
+          "screenshots": [
+            "/images/prayog-apis/screencapture-docs-innofulfill-api-docs-2026-06-01-20_53_27.png",
+            "/images/prayog-apis/screencapture-docs-innofulfill-old-api-docs-2026-06-01-20_52_55.png"
+          ],
+          "screenshotCaptions": [
+            "New API docs — interactive Scalar playground with full endpoint reference for the Prayog platform",
+            "Legacy API docs — preserved reference so older partner integrations continue to work"
+          ],
+          "color": "#6366f1",
+          "featured": true
+        },
+        {
           "id": "cod-management",
           "name": "COD Management System",
           "company": "BotAi Solutions",
@@ -443,6 +476,7 @@
       "id": "stargaze",
       "name": "Stargaze",
       "type": "Open Source · Observability Platform",
+      "category": "Website",
       "summary": "Self-hostable observability platform. One docker-compose up and you have API logs, metrics, dashboards, and alerting integrations running.",
       "description": "Stargaze is an open-source observability platform built for teams who want full control without the complexity of enterprise tools.\n\nPull the repo, run one command, and you get: API log monitoring, metrics dashboards, integrations with Email, Discord, Slack, Teams, and PagerDuty, RBAC, user management, API key management, and custom settings.\n\nBuilt with React (frontend), NestJS (backend), PostgreSQL, Docker, and Kafka for event streaming.",
       "tech": ["React", "NestJS", "PostgreSQL", "Docker", "Kafka"],
@@ -457,6 +491,15 @@
       "links": {
         "github": "https://github.com/Akash-Sharma00/Star-gaze"
       },
+      "screenshots": [
+        "/images/start-gaze/1775747360510.jpeg",
+        "/images/start-gaze/1775747361655.jpeg",
+        "/images/start-gaze/1775747362024.jpeg",
+        "/images/start-gaze/1776620719289.jpeg",
+        "/images/start-gaze/1776620719932.jpeg",
+        "/images/start-gaze/1776620719962.jpeg",
+        "/images/start-gaze/1776620720884.jpeg"
+      ],
       "highlight": "One command to spin up the full stack",
       "color": "#38bdf8"
     },
@@ -464,6 +507,7 @@
       "id": "un-secret",
       "name": "Un-Secret",
       "type": "Social Media App",
+      "category": "Mobile App",
       "summary": "Full social media app with posts, likes, shares, real-time chat, and video calling. Flutter frontend, MongoDB + Node.js backend deployed on Vercel.",
       "description": "Un-Secret is a complete social platform built for fun and learning. Posts, reactions, following — standard social graph. But also real-time chat via Socket.io and video calling via Zego Cloud, all inside Flutter.\n\nBackend runs on Node.js with MongoDB, deployed on Vercel.",
       "tech": ["Flutter", "BLOC", "Node.js", "MongoDB", "Socket.io", "Zego Cloud"],
@@ -485,6 +529,7 @@
       "id": "alphabet-animation",
       "name": "Alphabet Animation",
       "type": "Flutter Package · pub.dev",
+      "category": "Flutter Package",
       "summary": "Flutter package published on pub.dev that animates each individual letter of a word independently. Simple API, drop-in ready.",
       "description": "A small but useful Flutter package: give it a word, it animates each letter separately. Great for splash screens, loading states, and onboarding moments where you want some character.\n\nPublished on pub.dev with a clean, minimal API.",
       "tech": ["Flutter", "Dart"],
@@ -504,6 +549,7 @@
       "id": "small-solution",
       "name": "Small Solution",
       "type": "Hyperlocal Marketplace App",
+      "category": "Mobile App",
       "summary": "Hyperlocal marketplace connecting tradespeople (plumbers, carpenters, etc.) with people who need them — via direct call or in-app chat.",
       "description": "Small Solution tackles the problem of finding reliable local workers. Tradespeople register, add their category and availability. Users search by category, find someone nearby, and connect via direct call or in-app chat.\n\nBuilt in Java with XML layouts and Firebase as the backend.",
       "tech": ["Java", "XML", "Firebase"],
@@ -525,6 +571,7 @@
       "id": "chat-with-documents",
       "name": "Chat with Documents",
       "type": "AI Tool",
+      "category": "RAG System",
       "summary": "Upload any document, ask any question — it reads the whole thing and answers in context. Built with Python, LangChain, and LLaMA2 13B, served via FastAPI.",
       "description": "An AI chatbot that ingests your document, understands it, and answers questions from its contents. Handles out-of-scope questions gracefully — it tells you when something isn't in the document instead of hallucinating.\n\nBuilt with LangChain for document parsing and chunking, LLaMA2 13B as the local model, FastAPI as the server.",
       "tech": ["Python", "LangChain", "LLaMA2 13B", "FastAPI"],
@@ -543,6 +590,7 @@
       "id": "cab-tracking",
       "name": "CAB Tracking",
       "type": "Real-time Map Demo",
+      "category": "App",
       "summary": "Uber-style real-time cab tracking in Flutter — smooth marker animation, live polyline rendering, and progressive route erasing as the cab moves.",
       "description": "Enter two addresses, a polyline appears on Google Maps. When the cab starts moving via Socket.io updates, the marker animates smoothly along the route. The polyline behind the cab gradually erases as it goes — exactly how Uber/Ola works.\n\nBuilt to understand real-time map animation in Flutter.",
       "tech": ["Flutter", "Google Maps SDK", "Socket.io", "Node.js"],

@@ -7,6 +7,66 @@ import LinkButtons from './LinkButtons'
 
 interface Props { project: PersonalProject; index?: number }
 
+function CategoryIcon({ category, color }: { category: string; color: string }) {
+  const s = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+
+  switch (category) {
+    case 'Website':
+      return (
+        <svg {...s}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+      )
+    case 'Mobile App':
+      return (
+        <svg {...s}>
+          <rect x="5" y="2" width="14" height="20" rx="2" />
+          <circle cx="12" cy="17.5" r="0.8" fill={color} stroke="none" />
+          <line x1="8" y1="6" x2="16" y2="6" strokeOpacity="0.4" />
+        </svg>
+      )
+    case 'Flutter Package':
+      return (
+        <svg {...s}>
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+          <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+      )
+    case 'RAG System':
+      return (
+        <svg {...s}>
+          <rect x="4" y="4" width="16" height="16" rx="2" />
+          <rect x="9" y="9" width="6" height="6" />
+          <line x1="9" y1="1" x2="9" y2="4" />
+          <line x1="15" y1="1" x2="15" y2="4" />
+          <line x1="9" y1="20" x2="9" y2="23" />
+          <line x1="15" y1="20" x2="15" y2="23" />
+          <line x1="20" y1="9" x2="23" y2="9" />
+          <line x1="20" y1="14" x2="23" y2="14" />
+          <line x1="1" y1="9" x2="4" y2="9" />
+          <line x1="1" y1="14" x2="4" y2="14" />
+        </svg>
+      )
+    case 'App':
+      return (
+        <svg {...s}>
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      )
+    default:
+      return (
+        <svg {...s}>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18M9 21V9" />
+        </svg>
+      )
+  }
+}
+
 export default function ProjectCard({ project, index = 0 }: Props) {
   const navigate = useNavigate()
 
@@ -48,14 +108,15 @@ export default function ProjectCard({ project, index = 0 }: Props) {
           background: `linear-gradient(90deg, ${project.color}, transparent)`,
         }} />
 
-        {/* Header row: icon + type badge */}
+        {/* Header row: category icon + type badge */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10,
             background: `${project.color}14`, border: `1px solid ${project.color}28`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
           }}>
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: project.color, opacity: 0.75 }} />
+            <CategoryIcon category={project.category ?? ''} color={project.color} />
           </div>
           <span style={{
             padding: '2px 8px', borderRadius: 100, fontSize: 10,
@@ -117,9 +178,22 @@ export default function ProjectCard({ project, index = 0 }: Props) {
         )}
 
         {/* Tech stack */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14, alignItems: 'center' }}>
           {project.tech.slice(0, 4).map(t => <TechBadge key={t} tech={t} />)}
-          {project.tech.length > 4 && <span className="tag">+{project.tech.length - 4}</span>}
+          {project.tech.length > 4 && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center',
+              padding: '5px 10px', borderRadius: 100,
+              fontSize: 12, fontWeight: 500,
+              fontFamily: 'var(--font-body)',
+              background: 'var(--bg-card-hover)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)',
+              whiteSpace: 'nowrap',
+            }}>
+              +{project.tech.length - 4}
+            </span>
+          )}
         </div>
 
         {/* Action buttons */}

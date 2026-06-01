@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { Portfolio, Project, PersonalProject } from '../types'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -19,6 +19,25 @@ function findProject(data: Portfolio, id: string): AnyProject | null {
   return null
 }
 
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+}
+
+function SectionCard({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="initial"
+      animate="animate"
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1], delay }}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 function ScreenshotGallery({
   screenshots, color, name, captions = [],
 }: {
@@ -29,12 +48,12 @@ function ScreenshotGallery({
 }) {
   const [active, setActive] = useState(0)
   const [lightbox, setLightbox] = useState(false)
+  const [imgLoaded, setImgLoaded] = useState(false)
   const thumbsRef = useRef<HTMLDivElement>(null)
 
-  const prev = () => setActive(i => (i - 1 + screenshots.length) % screenshots.length)
-  const next = () => setActive(i => (i + 1) % screenshots.length)
+  const prev = () => { setImgLoaded(false); setActive(i => (i - 1 + screenshots.length) % screenshots.length) }
+  const next = () => { setImgLoaded(false); setActive(i => (i + 1) % screenshots.length) }
 
-  // Scroll active thumbnail into view
   useEffect(() => {
     const strip = thumbsRef.current
     if (!strip) return
@@ -42,7 +61,6 @@ function ScreenshotGallery({
     if (thumb) thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [active])
 
-  // Keyboard nav in lightbox
   useEffect(() => {
     if (!lightbox) return
     const onKey = (e: KeyboardEvent) => {
@@ -55,209 +73,264 @@ function ScreenshotGallery({
   }, [lightbox, active])
 
   const caption = captions[active]
+  const progress = ((active + 1) / screenshots.length) * 100
 
   return (
-    <div style={{ marginBottom: 32 }}>
+    <SectionCard delay={0.3} style={{ marginBottom: 28 }}>
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border)',
         borderRadius: 'var(--radius-lg)',
         overflow: 'hidden',
+        boxShadow: `0 0 0 1px var(--border), 0 8px 40px rgba(0,0,0,0.12)`,
       }}>
-        {/* Header bar */}
+        {/* Header */}
         <div style={{
-          padding: '16px 24px',
+          padding: '14px 20px',
           borderBottom: '1px solid var(--border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: 'var(--bg)',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.09em' }}>
-            Screenshots · {screenshots.length} screens
-          </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {[prev, next].map((fn, idx) => (
-              <button key={idx} onClick={fn} style={{
-                width: 30, height: 30, borderRadius: 7,
-                background: 'var(--bg)', border: '1px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14,
-                transition: 'border-color 0.15s, color 0.15s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = color; e.currentTarget.style.color = color }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)' }}
-              >
-                {idx === 0 ? '←' : '→'}
-              </button>
-            ))}
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', minWidth: 36, textAlign: 'center' }}>
-              {active + 1}/{screenshots.length}
+            {/* Traffic lights */}
+            <div style={{ display: 'flex', gap: 6 }}>
+              {['#ff5f57', '#febc2e', '#28c840'].map(c => (
+                <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: 0.85 }} />
+              ))}
+            </div>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', opacity: 0.7 }}>
+              {name}
             </span>
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={prev} style={navBtnStyle}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = color; e.currentTarget.style.color = color }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', minWidth: 34, textAlign: 'center' }}>
+              {active + 1}/{screenshots.length}
+            </span>
+            <button onClick={next} style={navBtnStyle}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = color; e.currentTarget.style.color = color }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div style={{ height: 2, background: 'var(--border)', position: 'relative' }}>
+          <motion.div
+            style={{ position: 'absolute', top: 0, left: 0, height: '100%', background: color, borderRadius: 2 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          />
         </div>
 
         {/* Main image */}
         <div
           style={{
-            position: 'relative', background: 'var(--bg)',
-            cursor: 'zoom-in', overflow: 'hidden',
+            position: 'relative',
+            background: `linear-gradient(135deg, var(--bg) 0%, color-mix(in srgb, ${color} 4%, var(--bg)) 100%)`,
+            cursor: 'zoom-in',
+            minHeight: 280,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
           onClick={() => setLightbox(true)}
         >
-          <motion.img
-            key={active}
-            src={screenshots[active]}
-            alt={caption || `${name} screenshot ${active + 1}`}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25 }}
-            style={{
-              width: '100%', height: 'auto',
-              maxHeight: '520px',
-              objectFit: 'contain',
-              display: 'block',
-            }}
-          />
-          {/* Zoom hint overlay */}
+          {!imgLoaded && (
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{
+                width: 24, height: 24, borderRadius: '50%',
+                border: `2px solid var(--border)`,
+                borderTopColor: color,
+                animation: 'spin 0.7s linear infinite',
+              }} />
+            </div>
+          )}
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={active}
+              src={screenshots[active]}
+              alt={caption || `${name} screenshot ${active + 1}`}
+              initial={{ opacity: 0, scale: 0.97, y: 8 }}
+              animate={{ opacity: imgLoaded ? 1 : 0, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: -8 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              onLoad={() => setImgLoaded(true)}
+              style={{
+                width: '100%', height: 'auto',
+                maxHeight: '560px',
+                objectFit: 'contain',
+                display: 'block',
+                padding: '12px',
+              }}
+            />
+          </AnimatePresence>
+
+          {/* Zoom hint */}
           <div style={{
-            position: 'absolute', top: 12, right: 12,
-            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)',
-            borderRadius: 7, padding: '4px 10px',
-            fontFamily: 'var(--font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.7)',
-            pointerEvents: 'none',
+            position: 'absolute', top: 10, right: 10,
+            background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
+            borderRadius: 6, padding: '3px 8px',
+            fontFamily: 'var(--font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.65)',
+            pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: 4,
           }}>
-            click to expand
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+            zoom
           </div>
         </div>
 
         {/* Caption */}
         {caption && (
           <div style={{
-            padding: '12px 24px',
+            padding: '12px 20px',
             borderTop: '1px solid var(--border)',
             fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5,
+            display: 'flex', alignItems: 'baseline', gap: 8,
           }}>
-            <span style={{ color: color, marginRight: 6, fontFamily: 'var(--font-mono)', fontSize: 11 }}>
+            <span style={{ color, fontFamily: 'var(--font-mono)', fontSize: 10, flexShrink: 0, marginTop: 1 }}>
               {String(active + 1).padStart(2, '0')}
             </span>
             {caption}
           </div>
         )}
 
-        {/* Thumbnail strip */}
+        {/* Thumbnails */}
         <div
           ref={thumbsRef}
           style={{
-            display: 'flex', gap: 8, padding: '12px 16px',
+            display: 'flex', gap: 6, padding: '12px 14px',
             overflowX: 'auto', borderTop: '1px solid var(--border)',
-            scrollbarWidth: 'none',
+            scrollbarWidth: 'none', background: 'var(--bg)',
           }}
         >
           {screenshots.map((src, i) => (
-            <div
+            <motion.div
               key={i}
-              onClick={() => setActive(i)}
+              onClick={() => { setImgLoaded(false); setActive(i) }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.95 }}
               style={{
-                flexShrink: 0,
-                width: 88, height: 56,
-                borderRadius: 8, overflow: 'hidden',
+                flexShrink: 0, width: 80, height: 52,
+                borderRadius: 7, overflow: 'hidden',
                 border: `2px solid ${i === active ? color : 'transparent'}`,
-                cursor: 'pointer',
-                opacity: i === active ? 1 : 0.45,
-                transition: 'opacity 0.18s, border-color 0.18s, transform 0.18s',
-                background: 'var(--bg)',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1.05)' }}
-              onMouseLeave={e => {
-                e.currentTarget.style.opacity = i === active ? '1' : '0.45'
-                e.currentTarget.style.transform = 'scale(1)'
+                cursor: 'pointer', opacity: i === active ? 1 : 0.4,
+                transition: 'opacity 0.2s, border-color 0.2s',
+                background: 'var(--bg-card)',
+                boxShadow: i === active ? `0 0 0 1px ${color}40` : 'none',
               }}
             >
-              <img src={src} alt={`thumb ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </div>
+              <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </motion.div>
           ))}
         </div>
       </div>
 
       {/* Lightbox */}
-      {lightbox && (
-        <div
-          onClick={() => setLightbox(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
-            background: 'rgba(0,0,0,0.94)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            cursor: 'zoom-out', padding: '60px 80px 80px',
-          }}
-        >
-          {/* Close */}
-          <button onClick={() => setLightbox(false)} style={{
-            position: 'fixed', top: 20, right: 20, zIndex: 1001,
-            width: 36, height: 36, borderRadius: 8,
-            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-            color: '#fff', fontSize: 16, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>✕</button>
-
-          {/* Prev */}
-          <button onClick={e => { e.stopPropagation(); prev() }} style={{
-            position: 'fixed', left: 20, top: '50%', transform: 'translateY(-50%)', zIndex: 1001,
-            width: 48, height: 48, borderRadius: 12,
-            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-            color: '#fff', fontSize: 20, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>←</button>
-
-          {/* Image */}
-          <motion.img
-            key={`lb-${active}`}
-            src={screenshots[active]}
-            alt={caption || `${name} ${active + 1}`}
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={e => e.stopPropagation()}
+            onClick={() => setLightbox(false)}
             style={{
-              maxWidth: '100%', maxHeight: '80vh',
-              objectFit: 'contain', borderRadius: 12,
-              boxShadow: `0 32px 80px ${color}40`,
-              cursor: 'default',
+              position: 'fixed', inset: 0, zIndex: 1000,
+              background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              cursor: 'zoom-out', padding: '60px 80px 80px',
             }}
-          />
+          >
+            <button onClick={() => setLightbox(false)} style={lbBtnStyle('fixed', { top: 20, right: 20 })}>✕</button>
+            <button onClick={e => { e.stopPropagation(); prev() }} style={lbBtnStyle('fixed', { left: 20, top: '50%', transform: 'translateY(-50%)' })}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
 
-          {/* Caption */}
-          {caption && (
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`lb-${active}`}
+                src={screenshots[active]}
+                alt={caption || `${name} ${active + 1}`}
+                initial={{ opacity: 0, scale: 0.94, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: -12 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  maxWidth: '90vw', maxHeight: '78vh',
+                  objectFit: 'contain', borderRadius: 12,
+                  boxShadow: `0 0 0 1px ${color}30, 0 40px 100px rgba(0,0,0,0.6), 0 0 80px ${color}20`,
+                  cursor: 'default',
+                }}
+              />
+            </AnimatePresence>
+
+            {caption && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                style={{
+                  marginTop: 20, maxWidth: 640, textAlign: 'center',
+                  fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6,
+                }}
+              >
+                <span style={{ color, marginRight: 8, fontFamily: 'var(--font-mono)', fontSize: 10 }}>
+                  {String(active + 1).padStart(2, '0')}
+                </span>
+                {caption}
+              </motion.div>
+            )}
+
+            <button onClick={e => { e.stopPropagation(); next() }} style={lbBtnStyle('fixed', { right: 20, top: '50%', transform: 'translateY(-50%)' })}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+
             <div style={{
-              marginTop: 16, maxWidth: 680, textAlign: 'center',
-              fontFamily: 'var(--font-body)', fontSize: 13,
-              color: 'rgba(255,255,255,0.55)', lineHeight: 1.6,
+              position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+              fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.25)',
+              display: 'flex', alignItems: 'center', gap: 10,
             }}>
-              <span style={{ color, marginRight: 6, fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-                {String(active + 1).padStart(2, '0')}
-              </span>
-              {caption}
+              <span>{active + 1} / {screenshots.length}</span>
+              <span style={{ opacity: 0.4 }}>·</span>
+              <span>ESC to close</span>
+              <span style={{ opacity: 0.4 }}>·</span>
+              <span>← → navigate</span>
             </div>
-          )}
-
-          {/* Next */}
-          <button onClick={e => { e.stopPropagation(); next() }} style={{
-            position: 'fixed', right: 20, top: '50%', transform: 'translateY(-50%)', zIndex: 1001,
-            width: 48, height: 48, borderRadius: 12,
-            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-            color: '#fff', fontSize: 20, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>→</button>
-
-          {/* Counter hint */}
-          <div style={{
-            position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-            fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)',
-          }}>
-            {active + 1} / {screenshots.length} · ESC to close · ← → to navigate
-          </div>
-        </div>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </SectionCard>
   )
+}
+
+const navBtnStyle: React.CSSProperties = {
+  width: 28, height: 28, borderRadius: 6,
+  background: 'var(--bg-card)', border: '1px solid var(--border)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: 'var(--text-muted)', cursor: 'pointer', fontSize: 13,
+  transition: 'border-color 0.15s, color 0.15s',
+}
+
+function lbBtnStyle(position: 'fixed' | 'absolute', extra: React.CSSProperties): React.CSSProperties {
+  return {
+    position, zIndex: 1001,
+    width: 40, height: 40, borderRadius: 10,
+    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+    color: '#fff', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    backdropFilter: 'blur(8px)',
+    ...extra,
+  }
 }
 
 export default function ProjectDetail() {
@@ -276,9 +349,9 @@ export default function ProjectDetail() {
 
   if (!data) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
         <div style={{
-          width: 32, height: 32, borderRadius: '50%',
+          width: 36, height: 36, borderRadius: '50%',
           border: '2px solid var(--border)',
           borderTopColor: 'var(--accent)',
           animation: 'spin 0.8s linear infinite',
@@ -305,133 +378,132 @@ export default function ProjectDetail() {
   const workProject = isWork ? (project as Project & { _kind: 'work' }) : null
   const personalProject = !isWork ? (project as PersonalProject & { _kind: 'personal' }) : null
   const color = project.color
-
   const links = project.links as Record<string, string>
-
   const description = project.description
   const paragraphs = description.split('\n\n').filter(Boolean)
 
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: 'calc(var(--nav-height) + 60px)', paddingBottom: 80 }}>
-        <div className="container" style={{ maxWidth: 860, margin: '0 auto' }}>
-          {/* Back link */}
-          <Link
-            to="/"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 14, color: 'var(--text-muted)', marginBottom: 48,
-              fontFamily: 'var(--font-mono)',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back to portfolio
-          </Link>
+      <main style={{ paddingTop: 'calc(var(--nav-height) + 48px)', paddingBottom: 100 }}>
+        {/* Ambient glow behind header */}
+        <div style={{
+          position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
+          width: 600, height: 300, borderRadius: '50%',
+          background: `radial-gradient(ellipse, ${color}12 0%, transparent 70%)`,
+          pointerEvents: 'none', zIndex: 0,
+        }} />
 
-          {/* Header */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '40px 44px',
-            marginBottom: 32,
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {/* Color gradient accent */}
+        <div className="container" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
+
+          {/* Hero header card */}
+          <SectionCard delay={0.05}>
             <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-              background: `linear-gradient(90deg, ${color}, transparent)`,
-            }} />
-            <div style={{
-              position: 'absolute', top: 0, right: 0, width: '40%', height: '100%',
-              background: `radial-gradient(ellipse at 100% 0%, ${color}08, transparent 70%)`,
-              pointerEvents: 'none',
-            }} />
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-xl)',
+              padding: '40px 44px 36px',
+              marginBottom: 20,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Top accent line */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+                background: `linear-gradient(90deg, ${color}, ${color}60, transparent)`,
+              }} />
+              {/* Radial glow */}
+              <div style={{
+                position: 'absolute', top: 0, right: 0, width: '55%', height: '100%',
+                background: `radial-gradient(ellipse at 100% 0%, ${color}0a, transparent 65%)`,
+                pointerEvents: 'none',
+              }} />
+              {/* Dot grid decoration */}
+              <div style={{
+                position: 'absolute', bottom: -10, right: -10, width: 160, height: 160,
+                backgroundImage: `radial-gradient(${color}18 1px, transparent 1px)`,
+                backgroundSize: '16px 16px',
+                pointerEvents: 'none',
+              }} />
 
-            <div style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20, gap: 16 }}>
-                <div>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '3px 10px',
-                    borderRadius: 100,
-                    fontSize: 11,
-                    background: `${color}15`,
-                    color: color,
-                    border: `1px solid ${color}30`,
-                    fontFamily: 'var(--font-mono)',
-                    marginBottom: 12,
-                  }}>
-                    {project.type}
-                  </span>
-                  <h1 style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(24px, 4vw, 40px)',
-                    fontWeight: 700,
-                    letterSpacing: '-0.03em',
-                    color: 'var(--text)',
-                    lineHeight: 1.2,
-                    marginBottom: 8,
-                  }}>
-                    {project.name}
-                  </h1>
-                  {workProject && (
-                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-                      {workProject.company}
-                    </span>
-                  )}
-                </div>
+              <div style={{ position: 'relative' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+                      <span style={{
+                        padding: '3px 10px', borderRadius: 100,
+                        fontSize: 11, background: `${color}15`, color,
+                        border: `1px solid ${color}30`,
+                        fontFamily: 'var(--font-mono)',
+                      }}>
+                        {project.type}
+                      </span>
+                      {workProject && (
+                        <span style={{
+                          padding: '3px 10px', borderRadius: 100,
+                          fontSize: 11, background: 'var(--bg)',
+                          color: 'var(--text-muted)', border: '1px solid var(--border)',
+                          fontFamily: 'var(--font-mono)',
+                        }}>
+                          {workProject.company}
+                        </span>
+                      )}
+                    </div>
 
-                <div>
-                  <LinkButtonsRow links={links} color={color} size="md" />
+                    <h1 style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: 'clamp(26px, 4.5vw, 44px)',
+                      fontWeight: 700, letterSpacing: '-0.03em',
+                      color: 'var(--text)', lineHeight: 1.15,
+                      marginBottom: 16,
+                    }}>
+                      {project.name}
+                    </h1>
+
+                    <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 560 }}>
+                      {project.summary}
+                    </p>
+                  </div>
+
+                  <div style={{ flexShrink: 0, paddingTop: 4 }}>
+                    <LinkButtonsRow links={links} color={color} size="md" />
+                  </div>
                 </div>
               </div>
-
-              <p style={{ fontSize: 17, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {project.summary}
-              </p>
             </div>
-          </div>
+          </SectionCard>
 
           {/* Impact / highlight banner */}
-          {workProject?.impact && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 16,
-              padding: '16px 24px',
-              background: `${color}0c`,
-              border: `1px solid ${color}25`,
-              borderRadius: 'var(--radius)',
-              marginBottom: 32,
-            }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: color }}>{workProject.impact}</div>
-                {workProject.impactDetail && (
-                  <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>{workProject.impactDetail}</div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {personalProject?.highlight && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 16,
-              padding: '16px 24px',
-              background: `${color}0c`,
-              border: `1px solid ${color}25`,
-              borderRadius: 'var(--radius)',
-              marginBottom: 32,
-            }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-              <div style={{ fontSize: 15, fontWeight: 600, color: color }}>✦ {personalProject.highlight}</div>
-            </div>
+          {(workProject?.impact || personalProject?.highlight) && (
+            <SectionCard delay={0.12} style={{ marginBottom: 20 }}>
+              <motion.div
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.18 }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 16,
+                  padding: '14px 20px',
+                  background: `${color}09`,
+                  border: `1px solid ${color}25`,
+                  borderRadius: 'var(--radius)',
+                  borderLeft: `3px solid ${color}`,
+                }}
+              >
+                <div>
+                  {workProject?.impact && (
+                    <div style={{ fontSize: 14, fontWeight: 600, color, marginBottom: workProject.impactDetail ? 2 : 0 }}>
+                      {workProject.impact}
+                    </div>
+                  )}
+                  {workProject?.impactDetail && (
+                    <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{workProject.impactDetail}</div>
+                  )}
+                  {personalProject?.highlight && (
+                    <div style={{ fontSize: 14, fontWeight: 600, color }}>✦ {personalProject.highlight}</div>
+                  )}
+                </div>
+              </motion.div>
+            </SectionCard>
           )}
 
           {/* Screenshot Gallery */}
@@ -444,173 +516,196 @@ export default function ProjectDetail() {
             />
           )}
 
-          <div className="project-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
-            {/* Description */}
-            <div>
-              <div style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '32px 36px',
-                marginBottom: 24,
-              }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
-                  About this project
-                </div>
-                {paragraphs.map((para, i) => (
-                  <p key={i} style={{
-                    fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.8,
-                    marginBottom: i < paragraphs.length - 1 ? 16 : 0,
-                  }}>
-                    {para}
-                  </p>
-                ))}
-              </div>
-
-              {/* Features */}
-              <div style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '32px 36px',
-              }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
-                  Key features
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {project.features.map((feature, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <span style={{
-                        width: 18, height: 18, borderRadius: 4,
-                        background: `${color}15`, border: `1px solid ${color}30`,
-                        color: color, fontSize: 10, flexShrink: 0,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        marginTop: 2,
-                      }}>
-                        ✓
-                      </span>
-                      <span style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{feature}</span>
-                    </div>
+          {/* Content grid */}
+          <div className="project-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+            {/* Description + Features */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <SectionCard delay={0.35}>
+                <div style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '28px 32px',
+                }}>
+                  <div style={sectionLabel}>About this project</div>
+                  {paragraphs.map((para, i) => (
+                    <p key={i} style={{
+                      fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.85,
+                      marginBottom: i < paragraphs.length - 1 ? 14 : 0,
+                    }}>
+                      {para}
+                    </p>
                   ))}
                 </div>
-              </div>
+              </SectionCard>
+
+              <SectionCard delay={0.42}>
+                <div style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '28px 32px',
+                }}>
+                  <div style={sectionLabel}>Key features</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {project.features.map((feature, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.48 + i * 0.04, duration: 0.3 }}
+                        style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}
+                      >
+                        <span style={{
+                          width: 20, height: 20, borderRadius: 5,
+                          background: `${color}12`, border: `1px solid ${color}28`,
+                          color, fontSize: 11, flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          marginTop: 1,
+                        }}>
+                          ✓
+                        </span>
+                        <span style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.65 }}>{feature}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </SectionCard>
             </div>
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* Tech stack */}
-              <div style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '24px',
-              }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-                  Tech Stack
+              <SectionCard delay={0.38}>
+                <div style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '22px',
+                }}>
+                  <div style={sectionLabel}>Tech Stack</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+                    {project.tech.map((t, i) => (
+                      <motion.div
+                        key={t}
+                        initial={{ opacity: 0, scale: 0.82 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.44 + i * 0.04, duration: 0.25 }}
+                      >
+                        <TechBadge tech={t} />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {project.tech.map(t => (
-                    <motion.div
-                      key={t}
-                      initial={{ opacity: 0, scale: 0.88 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <TechBadge tech={t} />
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+              </SectionCard>
 
               {/* Links */}
               {Object.values(links).some(v => v && v !== '#') && (
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '24px',
-                }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-                    Links
+                <SectionCard delay={0.45}>
+                  <div style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '22px',
+                  }}>
+                    <div style={sectionLabel}>Links</div>
+                    <LinkButtonsRow links={links} color={color} size="md" />
                   </div>
-                  <LinkButtonsRow links={links} color={color} size="md" />
-                </div>
+                </SectionCard>
               )}
 
-              {/* Company context for work projects */}
+              {/* Context */}
               {workProject && (
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '24px',
-                }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-                    Context
+                <SectionCard delay={0.5}>
+                  <div style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '22px',
+                  }}>
+                    <div style={sectionLabel}>Context</div>
+                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                      Built at{' '}
+                      <span style={{ color: 'var(--text)', fontWeight: 600 }}>{workProject.company}</span>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Built at <span style={{ color: 'var(--text)', fontWeight: 600 }}>{workProject.company}</span>
-                  </div>
-                </div>
+                </SectionCard>
               )}
             </div>
           </div>
 
-          {/* Other projects */}
-          <div style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--border)' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
-              More projects
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          {/* More projects */}
+          <SectionCard delay={0.55} style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--border)' }}>
+            <div style={sectionLabel}>More projects</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
               {data.personalProjects
                 .filter(p => p.id !== id)
                 .slice(0, 4)
-                .map(p => (
-                  <Link key={p.id} to={`/project/${p.id}`} style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    padding: '8px 16px',
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 100,
-                    fontSize: 13, color: 'var(--text-secondary)',
-                    transition: 'all 0.15s',
-                  }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = 'var(--border-hover)'
-                      e.currentTarget.style.color = 'var(--text)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                      e.currentTarget.style.color = 'var(--text-secondary)'
-                    }}
+                .map((p, i) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 + i * 0.06 }}
                   >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, flexShrink: 0, display: 'inline-block' }} />
-                    {p.name}
-                  </Link>
+                    <Link to={`/project/${p.id}`} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      padding: '7px 14px',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 100,
+                      fontSize: 13, color: 'var(--text-secondary)',
+                      transition: 'all 0.15s',
+                    }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = p.color + '60'
+                        e.currentTarget.style.color = 'var(--text)'
+                        e.currentTarget.style.background = p.color + '08'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'var(--border)'
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                        e.currentTarget.style.background = 'var(--bg-card)'
+                      }}
+                    >
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, flexShrink: 0, display: 'inline-block' }} />
+                      {p.name}
+                    </Link>
+                  </motion.div>
                 ))}
-              <Link to="/" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '8px 16px',
-                background: 'var(--accent-soft)',
-                border: '1px solid var(--accent-border)',
-                borderRadius: 100,
-                fontSize: 13, color: 'var(--accent)',
-              }}>
-                View all →
-              </Link>
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.84 }}>
+                <Link to="/" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '7px 14px',
+                  background: 'var(--accent-soft)',
+                  border: '1px solid var(--accent-border)',
+                  borderRadius: 100,
+                  fontSize: 13, color: 'var(--accent)',
+                }}>
+                  View all →
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </SectionCard>
         </div>
       </main>
       <Footer />
 
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
-          .project-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .project-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </>
   )
+}
+
+const sectionLabel: React.CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  marginBottom: 16,
 }

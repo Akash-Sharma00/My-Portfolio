@@ -1,6 +1,6 @@
 import { EASE } from '../utils/motion'
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../context/ThemeContext'
 
@@ -41,6 +41,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
   const { theme, toggle } = useTheme()
+  const navigate = useNavigate()
   const isHome = pathname === '/'
 
   useEffect(() => {
@@ -87,6 +88,29 @@ export default function Navbar() {
               </a>
             ))}
           </div>
+        )}
+
+        {!isHome && (
+          <motion.button
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => navigate(-1)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              fontSize: 13, fontFamily: 'var(--font-mono)',
+              color: 'var(--text-secondary)', background: 'none',
+              border: 'none', cursor: 'pointer', padding: '6px 0',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </motion.button>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

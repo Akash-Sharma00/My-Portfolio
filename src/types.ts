@@ -68,6 +68,7 @@ export interface PersonalProject {
   id: string;
   name: string;
   type: string;
+  category?: string;
   summary: string;
   description: string;
   tech: string[];

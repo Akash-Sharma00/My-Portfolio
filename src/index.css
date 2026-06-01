@@ -210,6 +210,29 @@ img { max-width: 100%; height: auto; }
   50%       { transform: translateY(-6px); }
 }
 
+/* ── 3D Tech Cubes ───────────────────────────────────────── */
+@keyframes cubeSpin {
+  from { transform: rotateX(22deg) rotateY(0deg); }
+  to   { transform: rotateX(22deg) rotateY(360deg); }
+}
+
+@keyframes cubeBob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ── Scroll indicator ────────────────────────────────────── */
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0px); opacity: 0.5; }
+  50%       { transform: translateY(6px); opacity: 1; }
+}
+
+/* ── Shimmer scan line ───────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
 /* ── Font shorthand ──────────────────────────────────────── */
 :root {
   --font-heading: 'Space Grotesk', system-ui, sans-serif;

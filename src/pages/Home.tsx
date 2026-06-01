@@ -10,9 +10,18 @@ import Education from '../components/Education'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 
+const SCROLL_KEY = 'home-scroll-y'
+
 export default function Home() {
   const [data, setData] = useState<Portfolio | null>(null)
   const [error, setError] = useState(false)
+
+  // Persist scroll position so "back" returns to the same spot
+  useEffect(() => {
+    const save = () => sessionStorage.setItem(SCROLL_KEY, String(window.scrollY))
+    window.addEventListener('scroll', save, { passive: true })
+    return () => window.removeEventListener('scroll', save)
+  }, [])
 
   useEffect(() => {
     fetch('/data/portfolio.json')
@@ -20,6 +29,16 @@ export default function Home() {
       .then(setData)
       .catch(() => setError(true))
   }, [])
+
+  // Restore scroll after data renders
+  useEffect(() => {
+    if (!data) return
+    const saved = sessionStorage.getItem(SCROLL_KEY)
+    if (saved) {
+      const y = parseInt(saved, 10)
+      requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
+    }
+  }, [data])
 
   if (error) {
     return (

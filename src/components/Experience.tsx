@@ -208,9 +208,22 @@ function FeaturedCard({ project }: { project: Project }) {
 
             <FeatureList features={project.features} color={color} max={4} />
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {project.tech.slice(0, 5).map(t => <TechBadge key={t} tech={t} />)}
-              {project.tech.length > 5 && <span className="tag">+{project.tech.length - 5}</span>}
+              {project.tech.length > 5 && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '5px 10px', borderRadius: 100,
+                  fontSize: 12, fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  background: 'var(--bg-card-hover)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-muted)',
+                  whiteSpace: 'nowrap',
+                }}>
+                  +{project.tech.length - 5}
+                </span>
+              )}
             </div>
 
             <div style={{ marginTop: 18 }}>
@@ -303,9 +316,22 @@ function SmallCard({ project, delay = 0 }: { project: Project; delay?: number })
           ))}
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 12, alignItems: 'center' }}>
           {project.tech.slice(0, 3).map(t => <TechBadge key={t} tech={t} />)}
-          {project.tech.length > 3 && <span className="tag">+{project.tech.length - 3}</span>}
+          {project.tech.length > 3 && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center',
+              padding: '5px 10px', borderRadius: 100,
+              fontSize: 12, fontWeight: 500,
+              fontFamily: 'var(--font-body)',
+              background: 'var(--bg-card-hover)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)',
+              whiteSpace: 'nowrap',
+            }}>
+              +{project.tech.length - 3}
+            </span>
+          )}
         </div>
 
         <LinkButtons
