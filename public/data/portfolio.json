@@ -402,7 +402,7 @@
           "tech": ["Flutter", "Dart", "Hive"],
           "features": ["Scrapbook-style UI", "Daily curated quotes", "Offline-first (Hive)", "Notes & journaling"],
           "links": {
-            "playstore": "#"
+            "playstore": "https://play.google.com/store/apps/details?id=com.tz.daily.journal.diary.secret.book.note.lock&hl=en&gl=US"
           },
           "color": "#fb923c",
           "featured": false
