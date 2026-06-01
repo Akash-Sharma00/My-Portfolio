@@ -1,8 +1,38 @@
 import { EASE } from '../utils/motion'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import type { Personal } from '../types'
 
 interface Props { data: Personal }
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault()
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      title={copied ? 'Copied!' : 'Copy'}
+      style={{
+        background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
+        color: copied ? 'var(--accent)' : 'var(--text-muted)', display: 'inline-flex',
+        alignItems: 'center', borderRadius: 4, transition: 'color 0.2s', marginLeft: 6,
+      }}
+    >
+      {copied
+        ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+        : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+      }
+    </button>
+  )
+}
 
 export default function About({ data }: Props) {
   return (
@@ -70,20 +100,25 @@ export default function About({ data }: Props) {
                 Contact
               </div>
               {[
-                { label: 'Email',    value: data.email,            href: `mailto:${data.email}` },
-                { label: 'Phone',    value: data.phone,            href: `tel:${data.phone}` },
-                { label: 'GitHub',   value: 'github.com',          href: data.social.github },
-                { label: 'LinkedIn', value: 'linkedin.com',        href: data.social.linkedin },
+                { label: 'Email',    value: data.email,                                        copy: data.email,         href: `mailto:${data.email}` },
+                { label: 'Phone',    value: data.phone,                                        copy: data.phone,         href: `tel:${data.phone}` },
+                { label: 'GitHub',   value: data.social.github.replace('https://', ''),        copy: data.social.github, href: data.social.github },
+                { label: 'LinkedIn', value: data.social.linkedin.replace('https://www.', ''), copy: data.social.linkedin, href: data.social.linkedin },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 11 }}>
                   <span style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{item.label}</span>
-                  <a href={item.href}
-                    style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500, transition: 'color 0.15s ease !important' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
-                  >
-                    {item.value}
-                  </a>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <a href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+                      style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500, transition: 'color 0.15s ease' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
+                    >
+                      {item.value}
+                    </a>
+                    <CopyButton text={item.copy} />
+                  </div>
                 </div>
               ))}
             </motion.div>

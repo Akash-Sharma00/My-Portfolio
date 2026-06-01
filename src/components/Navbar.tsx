@@ -71,9 +71,34 @@ export default function Navbar() {
       }}
     >
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>
-          <span style={{ color: 'var(--accent)' }}>A</span>kash
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {!isHome && (
+            <motion.button
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => navigate(-1)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: 13, fontFamily: 'var(--font-mono)',
+                color: 'var(--text-secondary)', background: 'var(--bg-card)',
+                border: '1px solid var(--border)', borderRadius: 8,
+                cursor: 'pointer', padding: '6px 12px',
+                transition: 'color 0.15s, border-color 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--text-muted)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)' }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              Back
+            </motion.button>
+          )}
+          <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>
+            <span style={{ color: 'var(--accent)' }}>A</span>kash
+          </Link>
+        </div>
 
         {isHome && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="nav-desktop">
@@ -88,29 +113,6 @@ export default function Navbar() {
               </a>
             ))}
           </div>
-        )}
-
-        {!isHome && (
-          <motion.button
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => navigate(-1)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              fontSize: 13, fontFamily: 'var(--font-mono)',
-              color: 'var(--text-secondary)', background: 'none',
-              border: 'none', cursor: 'pointer', padding: '6px 0',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back
-          </motion.button>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

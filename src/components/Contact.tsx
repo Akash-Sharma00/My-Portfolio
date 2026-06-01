@@ -1,8 +1,39 @@
 import { EASE } from '../utils/motion'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import type { Personal } from '../types'
 
 interface Props { data: Personal }
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault()
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      title={copied ? 'Copied!' : 'Copy'}
+      style={{
+        background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
+        color: copied ? 'var(--accent)' : 'var(--text-muted)', display: 'inline-flex',
+        alignItems: 'center', borderRadius: 4, transition: 'color 0.2s',
+        verticalAlign: 'middle', marginLeft: 4,
+      }}
+    >
+      {copied
+        ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+        : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+      }
+    </button>
+  )
+}
 
 export default function Contact({ data }: Props) {
   return (
@@ -77,9 +108,11 @@ export default function Contact({ data }: Props) {
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap', paddingTop: 24, borderTop: '1px solid var(--border)' }}>
             {[
-              { label: 'Email', value: data.email },
-              { label: 'Phone', value: data.phone },
-              { label: 'Location', value: data.location },
+              { label: 'Email', value: data.email, copy: data.email },
+              { label: 'Phone', value: data.phone, copy: data.phone },
+              { label: 'Location', value: data.location, copy: null },
+              { label: 'GitHub', value: data.social.github, copy: data.social.github, href: data.social.github },
+              { label: 'LinkedIn', value: data.social.linkedin, copy: data.social.linkedin, href: data.social.linkedin },
             ].map((item, i) => (
               <motion.div
                 key={item.label}
@@ -90,7 +123,13 @@ export default function Contact({ data }: Props) {
                 style={{ textAlign: 'center' }}
               >
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 4 }}>{item.label}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{item.value}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {'href' in item && item.href
+                    ? <a href={item.href} target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>{item.value}</a>
+                    : <span>{item.value}</span>
+                  }
+                  {item.copy && <CopyButton text={item.copy} />}
+                </div>
               </motion.div>
             ))}
           </div>
