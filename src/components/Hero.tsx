@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useAnimationFrame } from 'framer-motion'
 import type { Personal } from '../types'
 import { EASE } from '../utils/motion'
 import TechIcon from './TechIcon'
@@ -6,25 +6,55 @@ import { TECH_MAP } from './TechIcon'
 
 interface Props { data: Personal }
 
-interface FloatCard {
-  tech: string
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-  floatOffset: number
-  floatDur: number
-  delay: number
-}
+const ORBIT_TECHS = ['Flutter', 'React', 'Node.js', 'TypeScript', 'Python', 'Docker']
+const ORBIT_RADIUS = 180
+const ORBIT_DURATION = 18 // seconds per full revolution
+const CARD_SIZE = 52
 
-const FLOAT_CARDS: FloatCard[] = [
-  { tech: 'Flutter',    top: -30,   left: 124,  floatOffset: -12, floatDur: 5.5, delay: 0    },
-  { tech: 'React',      top: 24,    right: -40, floatOffset: -10, floatDur: 6.5, delay: 0.8  },
-  { tech: 'Node.js',   bottom: 24,  right: -40, floatOffset: -8,  floatDur: 5.0, delay: 1.5  },
-  { tech: 'TypeScript', bottom: -30, left: 124,  floatOffset: -12, floatDur: 7.0, delay: 0.4  },
-  { tech: 'Python',    top: 24,    left: -40,  floatOffset: -10, floatDur: 6.0, delay: 2.0  },
-  { tech: 'Docker',    bottom: 24,  left: -40,  floatOffset: -8,  floatDur: 5.8, delay: 1.2  },
-]
+function OrbitCard({ tech, index, total }: { tech: string; index: number; total: number }) {
+  const startAngle = (index / total) * Math.PI * 2 - Math.PI / 2
+  const half = CARD_SIZE / 2
+  const x = useMotionValue(Math.cos(startAngle) * ORBIT_RADIUS - half)
+  const y = useMotionValue(Math.sin(startAngle) * ORBIT_RADIUS - half)
+
+  useAnimationFrame((t) => {
+    const angle = startAngle + (t / 1000 / ORBIT_DURATION) * Math.PI * 2
+    x.set(Math.cos(angle) * ORBIT_RADIUS - half)
+    y.set(Math.sin(angle) * ORBIT_RADIUS - half)
+  })
+
+  const color = (TECH_MAP[tech] || { color: '#888888' }).color
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.4 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.8 + index * 0.12, duration: 0.5, ease: EASE }}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        x,
+        y,
+        zIndex: 3,
+        pointerEvents: 'none',
+      }}
+    >
+      <div style={{
+        width: CARD_SIZE, height: CARD_SIZE,
+        borderRadius: 14,
+        background: `${color}12`,
+        border: `1px solid ${color}35`,
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: `0 4px 20px ${color}20, inset 0 1px 0 ${color}15`,
+      }}>
+        <TechIcon tech={tech} size={26} />
+      </div>
+    </motion.div>
+  )
+}
 
 export default function Hero({ data }: Props) {
   return (
@@ -34,12 +64,14 @@ export default function Hero({ data }: Props) {
       paddingTop: 'calc(var(--nav-height) + 40px)',
       paddingBottom: 80,
       position: 'relative', overflow: 'hidden',
+      background: 'var(--bg)',
     }}>
       {/* Grid bg */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 0,
         backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
         backgroundSize: '64px 64px',
+        pointerEvents: 'none',
       }} />
 
       {/* Primary glow blob — top left */}
@@ -190,7 +222,7 @@ export default function Hero({ data }: Props) {
             </motion.div>
           </div>
 
-          {/* Profile photo + floating tech cards */}
+          {/* Profile photo + orbiting tech cards */}
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
@@ -224,51 +256,39 @@ export default function Hero({ data }: Props) {
                 }}
               />
 
-              {/* Floating tech cards */}
-              {FLOAT_CARDS.map((card, i) => {
-                const def = TECH_MAP[card.tech] || { color: '#888888' }
-                const color = def.color
-                return (
-                  <motion.div
-                    key={card.tech}
-                    initial={{ opacity: 0, scale: 0.4 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.8 + i * 0.12, ease: EASE }}
-                    style={{
-                      position: 'absolute',
-                      top: card.top,
-                      bottom: card.bottom,
-                      left: card.left,
-                      right: card.right,
-                      zIndex: 3,
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    <motion.div
-                      animate={{ y: [0, card.floatOffset, 0] }}
-                      transition={{
-                        duration: card.floatDur,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                        delay: card.delay * 0.5,
-                      }}
-                      style={{
-                        width: 52, height: 52,
-                        borderRadius: 14,
-                        background: `${color}12`,
-                        border: `1px solid ${color}35`,
-                        backdropFilter: 'blur(10px)',
-                        WebkitBackdropFilter: 'blur(10px)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: `0 4px 20px ${color}20, inset 0 1px 0 ${color}15`,
-                        transform: `perspective(300px) rotateX(${i % 2 === 0 ? 8 : -8}deg) rotateY(${i % 3 === 0 ? 10 : -10}deg)`,
-                      }}
-                    >
-                      <TechIcon tech={card.tech} size={26} />
-                    </motion.div>
-                  </motion.div>
-                )
-              })}
+              {/* Orbit ring (decorative dashed path) */}
+              <motion.svg
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.8 }}
+                style={{
+                  position: 'absolute',
+                  top: '50%', left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                  zIndex: 2,
+                  overflow: 'visible',
+                }}
+                width={ORBIT_RADIUS * 2 + 10}
+                height={ORBIT_RADIUS * 2 + 10}
+                viewBox={`0 0 ${ORBIT_RADIUS * 2 + 10} ${ORBIT_RADIUS * 2 + 10}`}
+              >
+                <circle
+                  cx={ORBIT_RADIUS + 5}
+                  cy={ORBIT_RADIUS + 5}
+                  r={ORBIT_RADIUS}
+                  fill="none"
+                  stroke="var(--border)"
+                  strokeWidth="1"
+                  strokeDasharray="3 9"
+                  opacity="0.6"
+                />
+              </motion.svg>
+
+              {/* Orbiting tech cards */}
+              {ORBIT_TECHS.map((tech, i) => (
+                <OrbitCard key={tech} tech={tech} index={i} total={ORBIT_TECHS.length} />
+              ))}
             </div>
           </motion.div>
         </div>

@@ -83,6 +83,8 @@ export interface Contribution {
   name: string;
   description: string;
   links: ProjectLink;
+  screenshots?: string[];
+  color?: string;
 }
 
 export interface Education {

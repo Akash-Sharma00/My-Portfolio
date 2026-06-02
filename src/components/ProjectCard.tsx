@@ -177,23 +177,15 @@ export default function ProjectCard({ project, index = 0 }: Props) {
           </div>
         )}
 
-        {/* Tech stack */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14, alignItems: 'center' }}>
-          {project.tech.slice(0, 4).map(t => <TechBadge key={t} tech={t} />)}
-          {project.tech.length > 4 && (
-            <span style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '5px 10px', borderRadius: 100,
-              fontSize: 12, fontWeight: 500,
-              fontFamily: 'var(--font-body)',
-              background: 'var(--bg-card-hover)',
-              border: '1px solid var(--border)',
-              color: 'var(--text-muted)',
-              whiteSpace: 'nowrap',
-            }}>
-              +{project.tech.length - 4}
-            </span>
-          )}
+        {/* Tech stack — single row, fade-clipped */}
+        <div style={{
+          marginBottom: 14, overflow: 'hidden',
+          maskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+        }}>
+          <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 6, alignItems: 'center' }}>
+            {project.tech.map(t => <TechBadge key={t} tech={t} />)}
+          </div>
         </div>
 
         {/* Action buttons */}

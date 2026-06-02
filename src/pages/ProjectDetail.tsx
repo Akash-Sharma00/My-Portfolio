@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Portfolio, Project, PersonalProject } from '../types'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { TechBadge } from '../components/TechIcon'
+import TechIcon, { TECH_MAP } from '../components/TechIcon'
 import LinkButtonsRow from '../components/LinkButtons'
+import PageBg from '../components/PageBg'
 
 type AnyProject = (Project & { _kind: 'work' }) | (PersonalProject & { _kind: 'personal' })
 
@@ -19,6 +20,8 @@ function findProject(data: Portfolio, id: string): AnyProject | null {
   return null
 }
 
+const ease = [0.22, 1, 0.36, 1] as const
+
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
@@ -30,10 +33,45 @@ function SectionCard({ children, delay = 0, style = {} }: { children: React.Reac
       variants={fadeUp}
       initial="initial"
       animate="animate"
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: 0.45, ease, delay }}
       style={style}
     >
       {children}
+    </motion.div>
+  )
+}
+
+function TechTile({ tech, delay = 0 }: { tech: string; delay?: number }) {
+  const def = TECH_MAP[tech] || { color: '#888888' }
+  const c = def.color
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85, y: 8 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ delay, duration: 0.3, ease }}
+      whileHover={{ scale: 1.06, y: -3 }}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+        padding: '20px 18px',
+        background: `${c}0d`,
+        border: `1px solid ${c}35`,
+        borderRadius: 14,
+        cursor: 'default',
+        minWidth: 90, flex: '0 0 auto',
+        boxShadow: `0 2px 12px ${c}10`,
+        transition: 'box-shadow 0.2s',
+      }}
+    >
+      <TechIcon tech={tech} size={32} />
+      <span style={{
+        fontSize: 11, color: 'var(--text-secondary)',
+        fontFamily: 'var(--font-mono)', fontWeight: 500,
+        textAlign: 'center', lineHeight: 1.3,
+        maxWidth: 80,
+      }}>
+        {tech}
+      </span>
     </motion.div>
   )
 }
@@ -76,7 +114,8 @@ function ScreenshotGallery({
   const progress = ((active + 1) / screenshots.length) * 100
 
   return (
-    <SectionCard delay={0.3} style={{ marginBottom: 28 }}>
+    <SectionCard delay={0.1} style={{ marginBottom: 28 }}>
+      <div style={sectionLabel}>Screenshots</div>
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border)',
@@ -92,7 +131,6 @@ function ScreenshotGallery({
           background: 'var(--bg)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Traffic lights */}
             <div style={{ display: 'flex', gap: 6 }}>
               {['#ff5f57', '#febc2e', '#28c840'].map(c => (
                 <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: 0.85 }} />
@@ -126,7 +164,7 @@ function ScreenshotGallery({
           <motion.div
             style={{ position: 'absolute', top: 0, left: 0, height: '100%', background: color, borderRadius: 2 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.35, ease }}
           />
         </div>
 
@@ -162,7 +200,7 @@ function ScreenshotGallery({
               initial={{ opacity: 0, scale: 0.97, y: 8 }}
               animate={{ opacity: imgLoaded ? 1 : 0, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: -8 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease }}
               onLoad={() => setImgLoaded(true)}
               style={{
                 width: '100%', height: 'auto',
@@ -174,7 +212,6 @@ function ScreenshotGallery({
             />
           </AnimatePresence>
 
-          {/* Zoom hint */}
           <div style={{
             position: 'absolute', top: 10, right: 10,
             background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
@@ -187,7 +224,6 @@ function ScreenshotGallery({
           </div>
         </div>
 
-        {/* Caption */}
         {caption && (
           <div style={{
             padding: '12px 20px',
@@ -202,7 +238,6 @@ function ScreenshotGallery({
           </div>
         )}
 
-        {/* Thumbnails */}
         <div
           ref={thumbsRef}
           style={{
@@ -263,7 +298,7 @@ function ScreenshotGallery({
                 initial={{ opacity: 0, scale: 0.94, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: -12 }}
-                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.25, ease }}
                 onClick={e => e.stopPropagation()}
                 style={{
                   maxWidth: '90vw', maxHeight: '78vh',
@@ -333,6 +368,23 @@ function lbBtnStyle(position: 'fixed' | 'absolute', extra: React.CSSProperties):
   }
 }
 
+const sectionLabel: React.CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 10,
+  color: 'var(--text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  marginBottom: 16,
+}
+
+const card: React.CSSProperties = {
+  background: 'var(--bg-card)',
+  border: '1px solid var(--border)',
+  borderRadius: 'var(--radius-lg)',
+  padding: '28px 32px',
+  marginBottom: 20,
+}
+
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>()
   const [data, setData] = useState<Portfolio | null>(null)
@@ -386,39 +438,28 @@ export default function ProjectDetail() {
     <>
       <Navbar />
       <main style={{ paddingTop: 'calc(var(--nav-height) + 48px)', paddingBottom: 100 }}>
-        {/* Ambient glow behind header */}
-        <div style={{
-          position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: 600, height: 300, borderRadius: '50%',
-          background: `radial-gradient(ellipse, ${color}12 0%, transparent 70%)`,
-          pointerEvents: 'none', zIndex: 0,
-        }} />
+        <PageBg color={color} />
 
         <div className="container" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
 
-          {/* Hero header card */}
-          <SectionCard delay={0.05}>
+          {/* ── 1. Hero header ──────────────────────────────── */}
+          <SectionCard delay={0.05} style={{ marginBottom: 20 }}>
             <div style={{
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-xl)',
+              ...card,
               padding: '40px 44px 36px',
-              marginBottom: 20,
+              marginBottom: 0,
               position: 'relative',
               overflow: 'hidden',
             }}>
-              {/* Top accent line */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, height: 2,
                 background: `linear-gradient(90deg, ${color}, ${color}60, transparent)`,
               }} />
-              {/* Radial glow */}
               <div style={{
                 position: 'absolute', top: 0, right: 0, width: '55%', height: '100%',
                 background: `radial-gradient(ellipse at 100% 0%, ${color}0a, transparent 65%)`,
                 pointerEvents: 'none',
               }} />
-              {/* Dot grid decoration */}
               <div style={{
                 position: 'absolute', bottom: -10, right: -10, width: 160, height: 160,
                 backgroundImage: `radial-gradient(${color}18 1px, transparent 1px)`,
@@ -473,7 +514,7 @@ export default function ProjectDetail() {
             </div>
           </SectionCard>
 
-          {/* Impact / highlight banner */}
+          {/* ── 2. Impact / highlight banner ────────────────── */}
           {(workProject?.impact || personalProject?.highlight) && (
             <SectionCard delay={0.12} style={{ marginBottom: 20 }}>
               <motion.div
@@ -506,136 +547,130 @@ export default function ProjectDetail() {
             </SectionCard>
           )}
 
-          {/* Screenshot Gallery */}
-          {project.screenshots && project.screenshots.length > 0 && (
-            <ScreenshotGallery
-              screenshots={project.screenshots}
-              captions={(project as typeof project & { screenshotCaptions?: string[] }).screenshotCaptions}
-              color={color}
-              name={project.name}
-            />
+          {/* ── 3. About ─────────────────────────────────────── */}
+          <SectionCard delay={0.2} style={{ marginBottom: 20 }}>
+            <div style={card}>
+              <div style={sectionLabel}>About this project</div>
+              {paragraphs.map((para, i) => (
+                <p key={i} style={{
+                  fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.85,
+                  marginBottom: i < paragraphs.length - 1 ? 14 : 0,
+                }}>
+                  {para}
+                </p>
+              ))}
+            </div>
+          </SectionCard>
+
+          {/* ── 4. Key Features ──────────────────────────────── */}
+          <SectionCard delay={0.28} style={{ marginBottom: 20 }}>
+            <div style={card}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={sectionLabel}>Key features</div>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 10,
+                  color, background: `${color}12`,
+                  border: `1px solid ${color}30`,
+                  padding: '2px 8px', borderRadius: 100,
+                }}>
+                  {project.features.length} features
+                </span>
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 12,
+              }}>
+                {project.features.map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.34 + i * 0.055, duration: 0.35, ease }}
+                    style={{
+                      padding: '18px 20px',
+                      background: `${color}07`,
+                      border: `1px solid ${color}22`,
+                      borderRadius: 12,
+                      borderLeft: `3px solid ${color}80`,
+                      display: 'flex', gap: 14, alignItems: 'flex-start',
+                    }}
+                  >
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700,
+                      color, opacity: 0.35, lineHeight: 1.2,
+                      flexShrink: 0, minWidth: 28, marginTop: 1,
+                    }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span style={{ fontSize: 13.5, color: 'var(--text)', lineHeight: 1.7 }}>
+                      {feature}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* ── 5. Tech Stack ────────────────────────────────── */}
+          <SectionCard delay={0.35} style={{ marginBottom: 20 }}>
+            <div style={card}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={sectionLabel}>Tech stack</div>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 10,
+                  color: 'var(--text-muted)', background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  padding: '2px 8px', borderRadius: 100,
+                }}>
+                  {project.tech.length} technologies
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {project.tech.map((t, i) => (
+                  <TechTile key={t} tech={t} delay={0.4 + i * 0.04} />
+                ))}
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* ── 6. Links (optional extra) ────────────────────── */}
+          {Object.values(links).some(v => v && v !== '#') && (
+            <SectionCard delay={0.42} style={{ marginBottom: 20 }}>
+              <div style={card}>
+                <div style={sectionLabel}>Links</div>
+                <LinkButtonsRow links={links} color={color} size="md" />
+              </div>
+            </SectionCard>
           )}
 
-          {/* Content grid */}
-          <div className="project-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
-            {/* Description + Features */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <SectionCard delay={0.35}>
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '28px 32px',
-                }}>
-                  <div style={sectionLabel}>About this project</div>
-                  {paragraphs.map((para, i) => (
-                    <p key={i} style={{
-                      fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.85,
-                      marginBottom: i < paragraphs.length - 1 ? 14 : 0,
-                    }}>
-                      {para}
-                    </p>
-                  ))}
+          {/* ── 7. Context (work only) ───────────────────────── */}
+          {workProject && (
+            <SectionCard delay={0.46} style={{ marginBottom: 20 }}>
+              <div style={card}>
+                <div style={sectionLabel}>Context</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                  Built at{' '}
+                  <span style={{ color: 'var(--text)', fontWeight: 600 }}>{workProject.company}</span>
                 </div>
-              </SectionCard>
+              </div>
+            </SectionCard>
+          )}
 
-              <SectionCard delay={0.42}>
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '28px 32px',
-                }}>
-                  <div style={sectionLabel}>Key features</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {project.features.map((feature, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.48 + i * 0.04, duration: 0.3 }}
-                        style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}
-                      >
-                        <span style={{
-                          width: 20, height: 20, borderRadius: 5,
-                          background: `${color}12`, border: `1px solid ${color}28`,
-                          color, fontSize: 11, flexShrink: 0,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          marginTop: 1,
-                        }}>
-                          ✓
-                        </span>
-                        <span style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.65 }}>{feature}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </SectionCard>
+          {/* ── 8. Screenshots — last ────────────────────────── */}
+          {project.screenshots && project.screenshots.length > 0 && (
+            <div style={{ marginTop: 40, paddingTop: 40, borderTop: '1px solid var(--border)' }}>
+              <ScreenshotGallery
+                screenshots={project.screenshots}
+                captions={(project as typeof project & { screenshotCaptions?: string[] }).screenshotCaptions}
+                color={color}
+                name={project.name}
+              />
             </div>
+          )}
 
-            {/* Sidebar */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* Tech stack */}
-              <SectionCard delay={0.38}>
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '22px',
-                }}>
-                  <div style={sectionLabel}>Tech Stack</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-                    {project.tech.map((t, i) => (
-                      <motion.div
-                        key={t}
-                        initial={{ opacity: 0, scale: 0.82 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.44 + i * 0.04, duration: 0.25 }}
-                      >
-                        <TechBadge tech={t} />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </SectionCard>
-
-              {/* Links */}
-              {Object.values(links).some(v => v && v !== '#') && (
-                <SectionCard delay={0.45}>
-                  <div style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: '22px',
-                  }}>
-                    <div style={sectionLabel}>Links</div>
-                    <LinkButtonsRow links={links} color={color} size="md" />
-                  </div>
-                </SectionCard>
-              )}
-
-              {/* Context */}
-              {workProject && (
-                <SectionCard delay={0.5}>
-                  <div style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: '22px',
-                  }}>
-                    <div style={sectionLabel}>Context</div>
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                      Built at{' '}
-                      <span style={{ color: 'var(--text)', fontWeight: 600 }}>{workProject.company}</span>
-                    </div>
-                  </div>
-                </SectionCard>
-              )}
-            </div>
-          </div>
-
-          {/* More projects */}
-          <SectionCard delay={0.55} style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--border)' }}>
+          {/* ── 9. More projects ─────────────────────────────── */}
+          <SectionCard delay={0.55} style={{ marginTop: project.screenshots?.length ? 20 : 64, paddingTop: 48, borderTop: '1px solid var(--border)' }}>
             <div style={sectionLabel}>More projects</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
               {data.personalProjects
@@ -693,19 +728,10 @@ export default function ProjectDetail() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          .project-grid { grid-template-columns: 1fr !important; }
+        @media (max-width: 640px) {
+          .project-features-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </>
   )
-}
-
-const sectionLabel: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: 10,
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  marginBottom: 16,
 }

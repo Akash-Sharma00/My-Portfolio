@@ -31,7 +31,7 @@ export const TECH_MAP: Record<string, TechDef> = {
   'Git / GitHub':                   { Icon: SiGit,          color: '#F05032' },
   'NestJS':                         { Icon: SiNestjs,       color: '#E0234E' },
   'Vercel':                         { Icon: SiVercel,       color: '#888888' },
-  'SQLite':                         { Icon: SiSqlite,       color: '#003B57' },
+  'SQLite':                         { Icon: SiSqlite,       color: '#0B84E3' },
   'GoLang':                         { Icon: SiGo,           color: '#00ADD8' },
   'Go':                             { Icon: SiGo,           color: '#00ADD8' },
   'HTML / CSS':                     { Icon: SiHtml5,        color: '#E34F26' },
@@ -43,6 +43,7 @@ export const TECH_MAP: Record<string, TechDef> = {
   'Kafka':                          { Icon: SiApachekafka,  color: '#888888' },
   'FastAPI':                        { Icon: SiFastapi,      color: '#009688' },
   'Razorpay':                       { Icon: SiRazorpay,     color: '#2C6EEB' },
+  'In-App Purchase':                { color: '#34D399',     label: 'IAP' },
   'Google Maps SDK':                { Icon: SiGooglemaps,   color: '#4285F4' },
   'Google Maps':                    { Icon: SiGooglemaps,   color: '#4285F4' },
   // Text-badge fallbacks

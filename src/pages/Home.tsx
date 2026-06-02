@@ -9,6 +9,7 @@ import PersonalProjects from '../components/PersonalProjects'
 import Education from '../components/Education'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
+import PageBg from '../components/PageBg'
 
 const SCROLL_KEY = 'home-scroll-y'
 
@@ -64,6 +65,7 @@ export default function Home() {
 
   return (
     <>
+      <PageBg color="#ff6535" />
       <Navbar />
       <main>
         <Hero data={data.personal} />

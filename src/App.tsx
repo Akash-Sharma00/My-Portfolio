@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import ProjectDetail from './pages/ProjectDetail'
 import ScrollToTop from './components/ScrollToTop'
 import ResumeDownloadFAB from './components/ResumeDownloadFAB'
+import ScrollToTopButton from './components/ScrollToTopButton'
 import './App.css'
 
 // Set initial theme before first paint
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/project/:id" element={<ProjectDetail />} />
         </Routes>
         <ResumeDownloadFAB />
+        <ScrollToTopButton />
       </BrowserRouter>
     </ThemeProvider>
   )

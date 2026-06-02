@@ -2,7 +2,11 @@
   "personal": {
     "name": "Akash Sharma",
     "title": "Sr. Software Engineer",
-    "specializations": ["Flutter", "React", "Node.js"],
+    "specializations": [
+      "Flutter",
+      "React",
+      "Node.js"
+    ],
     "about": "Full-stack Sr. Software Engineer with 3.9 years building production-scale logistics and healthcare platforms. Led a frontend team of 5, shipped apps handling 1.5 lakh daily orders, and delivered end-to-end solutions across Flutter, React, Node.js, and Python.",
     "aboutExtended": "I like building things that actually ship and get used. Whether it's a courier booking portal pushing 1.5 lakh orders a day, a Flutter app in someone's pocket, or a RAG system that makes the team's life easier — I care about the impact, not just the code. Based out of Mumbai, been at it for 3.9 years and still finding new problems worth solving.",
     "location": "Kandivali, Mumbai — India",
@@ -13,25 +17,83 @@
       "linkedin": "https://www.linkedin.com/in/akashsharma13"
     },
     "stats": [
-      { "label": "Years of Experience", "value": "3.9+", "suffix": "" },
-      { "label": "Daily Orders Handled", "value": "1.5L", "suffix": "" },
-      { "label": "Frontend Team Led", "value": "5+", "suffix": " engineers" },
-      { "label": "Apps Shipped", "value": "15+", "suffix": "" }
+      {
+        "label": "Years of Experience",
+        "value": "3.9+",
+        "suffix": ""
+      },
+      {
+        "label": "Daily Orders Handled",
+        "value": "1.5L",
+        "suffix": ""
+      },
+      {
+        "label": "Frontend Team Led",
+        "value": "5+",
+        "suffix": " engineers"
+      },
+      {
+        "label": "Apps Shipped",
+        "value": "15+",
+        "suffix": ""
+      }
     ],
     "status": "Open to new opportunities"
   },
-
   "skills": {
-    "Mobile": ["Flutter", "Dart", "BLOC", "Provider", "Play Store", "App Store"],
-    "Frontend": ["React", "TypeScript", "JavaScript", "HTML / CSS", "Zustand", "Vite"],
-    "Backend": ["Node.js", "Python", "GoLang", "JAVA", "REST API"],
-    "Databases": ["MongoDB", "PostgreSQL", "Firebase", "Supabase", "SQL"],
-    "Tools & Infra": ["Git / GitHub", "AWS", "Docker", "N8N", "API Integration", "Socket.io", "RAG Systems", "Pinecone"],
-    "IDEs": ["VS Code", "Android Studio"]
+    "Mobile": [
+      "Flutter",
+      "Dart",
+      "BLOC",
+      "Provider",
+      "Play Store",
+      "App Store"
+    ],
+    "Frontend": [
+      "React",
+      "TypeScript",
+      "JavaScript",
+      "HTML / CSS",
+      "Zustand",
+      "Vite"
+    ],
+    "Backend": [
+      "Node.js",
+      "Python",
+      "GoLang",
+      "JAVA",
+      "REST API"
+    ],
+    "Databases": [
+      "MongoDB",
+      "PostgreSQL",
+      "Firebase",
+      "Supabase",
+      "SQL"
+    ],
+    "Tools & Infra": [
+      "Git / GitHub",
+      "AWS",
+      "Docker",
+      "N8N",
+      "API Integration",
+      "Socket.io",
+      "RAG Systems",
+      "Pinecone"
+    ],
+    "IDEs": [
+      "VS Code",
+      "Android Studio"
+    ]
   },
-
-  "aiTools": ["Claude Code", "Antigravity", "Codex", "Cursor", "ChatGPT", "Gemini"],
-
+  "aiTools": [
+    "Claude Code",
+    "Antigravity",
+    "Codex",
+    "Cursor",
+    "ChatGPT",
+    "Gemini"
+  ],
   "workExperience": [
     {
       "id": "botai",
@@ -52,7 +114,11 @@
           "description": "Blazepost is the backbone of Shree Maruti's channel partner network. Partners log in, book shipments, manage their delivery routes, and handle everything from wallets to e-way bills — all in one place.\n\nI own the entire frontend and contributed heavily to backend services including pincode management, rate calculation logic, and OCR-powered booking. Also guided and managed the rest of the frontend team.",
           "impact": "1.5 lakh orders processed every single day",
           "impactDetail": "Full frontend ownership + backend contributions",
-          "tech": ["React", "Node.js", "TypeScript"],
+          "tech": [
+            "React",
+            "Node.js",
+            "TypeScript"
+          ],
           "features": [
             "Authentication & user onboarding",
             "Order booking with OCR support",
@@ -97,7 +163,11 @@
           "description": "SMILe CP is the Blazepost experience on mobile. Same powerful features, same workflows — now accessible from a phone. Built from scratch in Flutter, published on both Android and iOS.\n\nThis is my project end-to-end: architecture decisions, feature planning, code, and releases.",
           "impact": "Full ownership — Android & iOS",
           "impactDetail": "Zero to shipped on both platforms",
-          "tech": ["Flutter", "Dart", "BLOC"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "BLOC"
+          ],
           "features": [
             "Authentication",
             "Order booking with OCR",
@@ -129,7 +199,11 @@
           "description": "Traditional print flows show a dialog. This doesn't. When a booking is created in Blazepost, a ZPL template is generated and silently sent to the thermal printer. The sticker comes out without anyone touching a keyboard.\n\nBuilt the ZPL template system from scratch, integrated with the booking flow, and handled edge cases like printer offline states and reprint requests.",
           "impact": "Eliminated the manual print step for every single order",
           "impactDetail": "Saves seconds per order — adds up to hours daily at 1.5L scale",
-          "tech": ["ZPL (Zebra Printing Language)", "React", "Node.js"],
+          "tech": [
+            "ZPL (Zebra Printing Language)",
+            "React",
+            "Node.js"
+          ],
           "features": [
             "Custom ZPL sticker template",
             "Auto-trigger on order creation",
@@ -138,8 +212,12 @@
             "Reprint support"
           ],
           "links": {},
-          "screenshots": ["/images/ZPL/image.png"],
-          "screenshotCaptions": ["ZPL Thermal Label — auto-generated silent-print shipping sticker with barcode, QR code, and delivery details"],
+          "screenshots": [
+            "/images/ZPL/image.png"
+          ],
+          "screenshotCaptions": [
+            "ZPL Thermal Label — auto-generated silent-print shipping sticker with barcode, QR code, and delivery details"
+          ],
           "color": "#4ade80",
           "featured": false
         },
@@ -152,7 +230,13 @@
           "description": "Built two N8N workflows: one that chunks and embeds API documentation into Pinecone vector DB, and another that handles live queries — triggered by webhook, searches the vector store, then calls either Gemini or Grok depending on the query type.\n\nThis replaced the \"ask a senior dev\" bottleneck for API questions.",
           "impact": "Team can query any API doc in natural language",
           "impactDetail": "Supports both Gemini and Grok models",
-          "tech": ["N8N", "Pinecone", "Gemini", "Grok", "Python"],
+          "tech": [
+            "N8N",
+            "Pinecone",
+            "Gemini",
+            "Grok",
+            "Python"
+          ],
           "features": [
             "Document chunking & vectorization",
             "Pinecone vector database storage",
@@ -173,7 +257,11 @@
           "description": "The pincode system is the backbone of serviceability decisions in Blazepost. When a partner books a shipment, this determines whether the destination is serviceable, which delivery zone it falls in (Local / Metro / State / ROI), and which pricing slab applies.\n\nBuilt the full admin interface for managing mappings, bulk Excel import, and the lookup API consumed live by the booking flow.",
           "impact": "5,649+ pincode mappings powering all bookings",
           "impactDetail": "Used live for every serviceability & rate lookup",
-          "tech": ["React", "Node.js", "PostgreSQL"],
+          "tech": [
+            "React",
+            "Node.js",
+            "PostgreSQL"
+          ],
           "features": [
             "Pincode CRUD with bulk Excel import",
             "State, city & area classification",
@@ -195,7 +283,14 @@
           "description": "Prayog is built for logistics businesses that want to automate their operations without building tech from scratch. White-label ready, multi-partner integrations, custom domains — it's a logistics OS.\n\nI led frontend development (team of 5), built the complete COD management system with webhook + Excel + manual ingestion, and was involved in product planning with the leadership team.\n\nStack: React on the frontend, Python + Node.js + GoLang on backend, PostgreSQL for data, hosted on AWS.",
           "impact": "Led a team of 5 engineers",
           "impactDetail": "Involved in product planning + full-stack development",
-          "tech": ["React", "Python", "Node.js", "GoLang", "PostgreSQL", "AWS"],
+          "tech": [
+            "React",
+            "Python",
+            "Node.js",
+            "GoLang",
+            "PostgreSQL",
+            "AWS"
+          ],
           "features": [
             "Authentication with RBAC",
             "White labeling (themes + logos)",
@@ -246,7 +341,12 @@
           "description": "Built the full developer documentation site for the Prayog SaaS platform, live at docs.innofulfill.com.\n\nThe site combines a structured API reference with an interactive playground — developers can authenticate, pick an endpoint, fill parameters, and fire a real request directly from the browser. Every response is shown inline with proper schema documentation alongside it.\n\nCovers the complete API surface: authentication flows, order creation, tracking, webhook payloads, bulk operations, and partner management. Also maintains the legacy API reference so older integrations don't break.",
           "impact": "Live interactive docs — zero Postman required",
           "impactDetail": "Partners can explore and test the full API from the browser",
-          "tech": ["OpenAPI / Swagger", "Scalar", "Node.js", "Markdown"],
+          "tech": [
+            "OpenAPI / Swagger",
+            "Scalar",
+            "Node.js",
+            "Markdown"
+          ],
           "features": [
             "Interactive API playground — test live requests from the browser",
             "Full endpoint reference: auth, orders, tracking, webhooks",
@@ -279,7 +379,11 @@
           "description": "COD (Cash on Delivery) remittance tracking is one of logistics's biggest pain points — money from deliveries flows back through multiple courier partners at different times and formats.\n\nBuilt a full reconciliation system in Prayog with three ingestion modes: webhook from delivery partners, bulk Excel upload, and manual entry. The engine matches remittances to orders and flags discrepancies for review.",
           "impact": "Three ingestion modes — webhook, Excel, manual",
           "impactDetail": "Automated reconciliation + discrepancy flagging",
-          "tech": ["React", "Node.js", "PostgreSQL"],
+          "tech": [
+            "React",
+            "Node.js",
+            "PostgreSQL"
+          ],
           "features": [
             "Webhook ingestion from delivery partners",
             "Bulk Excel upload & parsing",
@@ -311,7 +415,12 @@
           "description": "Think LinkedIn but built for the medical community. Health Parliament lets medical professionals create verified profiles, join communities, read medical news, participate in surveys, and connect with peers.\n\nBuilt end-to-end in Flutter with Razorpay for payments and a robust privacy layer (users can hide sensitive data from non-verified accounts).",
           "impact": "Live on Play Store & App Store",
           "impactDetail": "Available on web too",
-          "tech": ["Flutter", "Dart", "Firebase", "Razorpay"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Firebase",
+            "Razorpay"
+          ],
           "features": [
             "Email verification auth",
             "Community creation (PDF generation)",
@@ -347,7 +456,11 @@
           "description": "Humrahi is focused on making diabetes management less of a chore. Patients track blood sugar with visual graphs, follow diet plans, log steps automatically via Google Fit, calculate BMI, and can share PDF reports directly with their doctor.\n\nLocalization support means it works across different regions.",
           "impact": "Live on Play Store & App Store",
           "impactDetail": "",
-          "tech": ["Flutter", "Dart", "Google Fit API"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Google Fit API"
+          ],
           "features": [
             "OTP verification auth",
             "Blood sugar level tracking with graphs",
@@ -382,7 +495,11 @@
           "description": "SWASTIK handles everything at a wellbeing centre across three phases:\n\nPre Check-In: Medical test tracking, questionnaire, E-Pass generation, virtual signature.\nChecked-In: Full event & schedule tracking, personal journal, custom music library, chat with doctor, help desk.\nCommon: Dual auth (OTP or password), push notifications, account deletion.",
           "impact": "Live on Play Store",
           "impactDetail": "Full patient lifecycle management",
-          "tech": ["Flutter", "Dart", "Firebase"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Firebase"
+          ],
           "features": [
             "Medical test & report tracking",
             "Questionnaire flow",
@@ -432,8 +549,19 @@
           "description": "Daily Journal is a personal space for thoughts and reflection. The scrapbook aesthetic makes it feel different from standard note apps. Quotes are curated and refreshed daily. Hive makes it fully offline.",
           "impact": "Live on Play Store",
           "impactDetail": "",
-          "tech": ["Flutter", "Dart", "Hive"],
-          "features": ["Scrapbook-style UI", "Daily curated quotes", "Offline-first (Hive)", "Notes & journaling"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Hive",
+            "In-App Purchase"
+          ],
+          "features": [
+            "Scrapbook-style UI",
+            "Daily curated quotes",
+            "Offline-first (Hive)",
+            "Notes & journaling",
+            "In-app purchases for premium content"
+          ],
           "links": {
             "playstore": "https://play.google.com/store/apps/details?id=com.tz.daily.journal.diary.secret.book.note.lock&hl=en&gl=US"
           },
@@ -449,8 +577,18 @@
           "description": "Covers numerology readings, zodiac signs, and astrology content in multiple languages. Includes in-app purchases for premium content. Part of a broader suite of lifestyle apps at Touchzing.",
           "impact": "Live on Play Store & App Store",
           "impactDetail": "",
-          "tech": ["Flutter", "Dart", "SQLite"],
-          "features": ["Numerology readings", "Zodiac & astrology content", "Multi-language support", "In-app purchases"],
+          "tech": [
+            "Flutter",
+            "Dart",
+            "SQLite",
+            "In-App Purchase"
+          ],
+          "features": [
+            "Numerology readings",
+            "Zodiac & astrology content",
+            "Multi-language support",
+            "In-app purchases"
+          ],
           "links": {
             "playstore": "https://play.google.com/store/apps/details?id=com.internetdesignzone.numerology&hl=en&gl=US",
             "appstore": "https://apps.apple.com/us/app/the-numerology-star-astrology/id412843810"
@@ -466,11 +604,48 @@
           ],
           "color": "#a78bfa",
           "featured": true
+        },
+        {
+          "id": "palm-reading",
+          "name": "Palm Reading",
+          "company": "Touchzing Media PVT LTD",
+          "type": "Lifestyle App",
+          "summary": "Palmistry app that analyses palm lines to reveal personality traits, character, and fortune. Includes astrology integration, a horoscope, and a Magic 8 Ball.",
+          "description": "Palm Reading brings the ancient art of palmistry to your fingertips. Users scan their palm lines and receive detailed personality insights and fortune readings crafted by experienced fortune tellers.\n\nThe app connects your unique palm lines with your astrology profile, offering personalised psychic readings and horoscope content. A built-in Magic 8 Ball adds a fun, spontaneous guidance feature alongside the serious palmistry content.\n\nBuilt with Flutter and SQLite for offline-first storage. Premium readings are unlocked via in-app purchases.",
+          "impact": "Live on Play Store",
+          "impactDetail": "Part of Touchzing's astrology app suite",
+          "tech": [
+            "Flutter",
+            "Dart",
+            "SQLite",
+            "In-App Purchase"
+          ],
+          "features": [
+            "Palm line analysis & character interpretation",
+            "Personality & fortune readings by fortune tellers",
+            "Psychic readings linked to astrology profile",
+            "Daily horoscope & zodiac integration",
+            "Magic 8 Ball for spontaneous guidance",
+            "In-app purchases for premium content",
+            "Offline-first with SQLite storage"
+          ],
+          "links": {
+            "playstore": "https://play.google.com/store/apps/details?id=com.internetdesignzone.palmreading&hl=en&gl=US"
+          },
+          "screenshots": [
+            "/images/palm-reading/01.webp",
+            "/images/palm-reading/02.webp",
+            "/images/palm-reading/03.webp",
+            "/images/palm-reading/04.webp",
+            "/images/palm-reading/05.webp",
+            "/images/palm-reading/06.webp"
+          ],
+          "color": "#e879f9",
+          "featured": true
         }
       ]
     }
   ],
-
   "personalProjects": [
     {
       "id": "stargaze",
@@ -479,7 +654,13 @@
       "category": "Website",
       "summary": "Self-hostable observability platform. One docker-compose up and you have API logs, metrics, dashboards, and alerting integrations running.",
       "description": "Stargaze is an open-source observability platform built for teams who want full control without the complexity of enterprise tools.\n\nPull the repo, run one command, and you get: API log monitoring, metrics dashboards, integrations with Email, Discord, Slack, Teams, and PagerDuty, RBAC, user management, API key management, and custom settings.\n\nBuilt with React (frontend), NestJS (backend), PostgreSQL, Docker, and Kafka for event streaming.",
-      "tech": ["React", "NestJS", "PostgreSQL", "Docker", "Kafka"],
+      "tech": [
+        "React",
+        "NestJS",
+        "PostgreSQL",
+        "Docker",
+        "Kafka"
+      ],
       "features": [
         "API logs & metrics monitoring",
         "Email, Discord, Slack, Teams, PagerDuty integrations",
@@ -510,7 +691,14 @@
       "category": "Mobile App",
       "summary": "Full social media app with posts, likes, shares, real-time chat, and video calling. Flutter frontend, MongoDB + Node.js backend deployed on Vercel.",
       "description": "Un-Secret is a complete social platform built for fun and learning. Posts, reactions, following — standard social graph. But also real-time chat via Socket.io and video calling via Zego Cloud, all inside Flutter.\n\nBackend runs on Node.js with MongoDB, deployed on Vercel.",
-      "tech": ["Flutter", "BLOC", "Node.js", "MongoDB", "Socket.io", "Zego Cloud"],
+      "tech": [
+        "Flutter",
+        "BLOC",
+        "Node.js",
+        "MongoDB",
+        "Socket.io",
+        "Zego Cloud"
+      ],
       "features": [
         "Posts, likes & shares",
         "Real-time chat (Socket.io)",
@@ -532,7 +720,10 @@
       "category": "Flutter Package",
       "summary": "Flutter package published on pub.dev that animates each individual letter of a word independently. Simple API, drop-in ready.",
       "description": "A small but useful Flutter package: give it a word, it animates each letter separately. Great for splash screens, loading states, and onboarding moments where you want some character.\n\nPublished on pub.dev with a clean, minimal API.",
-      "tech": ["Flutter", "Dart"],
+      "tech": [
+        "Flutter",
+        "Dart"
+      ],
       "features": [
         "Per-letter independent animation",
         "Configurable animation types",
@@ -552,7 +743,11 @@
       "category": "Mobile App",
       "summary": "Hyperlocal marketplace connecting tradespeople (plumbers, carpenters, etc.) with people who need them — via direct call or in-app chat.",
       "description": "Small Solution tackles the problem of finding reliable local workers. Tradespeople register, add their category and availability. Users search by category, find someone nearby, and connect via direct call or in-app chat.\n\nBuilt in Java with XML layouts and Firebase as the backend.",
-      "tech": ["Java", "XML", "Firebase"],
+      "tech": [
+        "Java",
+        "XML",
+        "Firebase"
+      ],
       "features": [
         "Worker registration & profile",
         "Category-based search",
@@ -574,7 +769,12 @@
       "category": "RAG System",
       "summary": "Upload any document, ask any question — it reads the whole thing and answers in context. Built with Python, LangChain, and LLaMA2 13B, served via FastAPI.",
       "description": "An AI chatbot that ingests your document, understands it, and answers questions from its contents. Handles out-of-scope questions gracefully — it tells you when something isn't in the document instead of hallucinating.\n\nBuilt with LangChain for document parsing and chunking, LLaMA2 13B as the local model, FastAPI as the server.",
-      "tech": ["Python", "LangChain", "LLaMA2 13B", "FastAPI"],
+      "tech": [
+        "Python",
+        "LangChain",
+        "LLaMA2 13B",
+        "FastAPI"
+      ],
       "features": [
         "Document upload & parsing",
         "Context-aware Q&A",
@@ -593,7 +793,12 @@
       "category": "App",
       "summary": "Uber-style real-time cab tracking in Flutter — smooth marker animation, live polyline rendering, and progressive route erasing as the cab moves.",
       "description": "Enter two addresses, a polyline appears on Google Maps. When the cab starts moving via Socket.io updates, the marker animates smoothly along the route. The polyline behind the cab gradually erases as it goes — exactly how Uber/Ola works.\n\nBuilt to understand real-time map animation in Flutter.",
-      "tech": ["Flutter", "Google Maps SDK", "Socket.io", "Node.js"],
+      "tech": [
+        "Flutter",
+        "Google Maps SDK",
+        "Socket.io",
+        "Node.js"
+      ],
       "features": [
         "Address-to-polyline rendering",
         "Smooth cab marker animation",
@@ -606,7 +811,6 @@
       "color": "#4ade80"
     }
   ],
-
   "contributions": [
     {
       "name": "SHE",
@@ -614,7 +818,15 @@
       "links": {
         "playstore": "https://play.google.com/store/apps/details?id=dha.she",
         "appstore": "https://apps.apple.com/in/app/she-safety-health-empowerment/id6471245331"
-      }
+      },
+      "color": "#f472b6",
+      "screenshots": [
+        "/images/she/unnamed.webp",
+        "/images/she/unnamed (1).webp",
+        "/images/she/unnamed (2).webp",
+        "/images/she/unnamed (3).webp",
+        "/images/she/unnamed (4).webp"
+      ]
     },
     {
       "name": "Patient's Union",
@@ -622,7 +834,14 @@
       "links": {
         "playstore": "https://play.google.com/store/apps/details?id=patients.union",
         "appstore": "https://apps.apple.com/in/app/patients-union/id6449766453"
-      }
+      },
+      "color": "#60a5fa",
+      "screenshots": [
+        "/images/pateints-union/unnamed (5).webp",
+        "/images/pateints-union/unnamed (6).webp",
+        "/images/pateints-union/unnamed (7).webp",
+        "/images/pateints-union/unnamed (8).webp"
+      ]
     },
     {
       "name": "LMS In App",
@@ -630,7 +849,6 @@
       "links": {}
     }
   ],
-
   "education": {
     "degree": "Bachelor of Engineering — Information Technology",
     "college": "Nirmala Memorial Foundation College",
@@ -638,7 +856,6 @@
     "period": "2019 — 2022",
     "cgpa": "9.1 CGPI"
   },
-
   "learnings": [
     "Team Management",
     "Project Structure",
