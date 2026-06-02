@@ -97,7 +97,7 @@ export default function Hero({ data }: Props) {
       />
 
       <div className="container">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 64, justifyContent: 'space-between' }}>
+        <div className="hero-content" style={{ display: 'flex', alignItems: 'center', gap: 64, justifyContent: 'space-between' }}>
           <div style={{ flex: '1 1 0', minWidth: 0 }}>
 
             {/* Status badge */}
@@ -229,7 +229,7 @@ export default function Hero({ data }: Props) {
             className="hero-photo-wrap"
             style={{ flexShrink: 0 }}
           >
-            <div style={{
+            <div className="hero-photo-container" style={{
               position: 'relative', width: 300, height: 300,
               overflow: 'visible',
             }}>
@@ -256,39 +256,39 @@ export default function Hero({ data }: Props) {
                 }}
               />
 
-              {/* Orbit ring (decorative dashed path) */}
-              <motion.svg
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.8 }}
-                style={{
-                  position: 'absolute',
-                  top: '50%', left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none',
-                  zIndex: 2,
-                  overflow: 'visible',
-                }}
-                width={ORBIT_RADIUS * 2 + 10}
-                height={ORBIT_RADIUS * 2 + 10}
-                viewBox={`0 0 ${ORBIT_RADIUS * 2 + 10} ${ORBIT_RADIUS * 2 + 10}`}
-              >
-                <circle
-                  cx={ORBIT_RADIUS + 5}
-                  cy={ORBIT_RADIUS + 5}
-                  r={ORBIT_RADIUS}
-                  fill="none"
-                  stroke="var(--border)"
-                  strokeWidth="1"
-                  strokeDasharray="3 9"
-                  opacity="0.6"
-                />
-              </motion.svg>
+              {/* Orbit ring + cards — hidden on mobile */}
+              <div className="hero-orbit" style={{ position: 'absolute', inset: 0, overflow: 'visible', pointerEvents: 'none' }}>
+                <motion.svg
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.8 }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 2,
+                    overflow: 'visible',
+                  }}
+                  width={ORBIT_RADIUS * 2 + 10}
+                  height={ORBIT_RADIUS * 2 + 10}
+                  viewBox={`0 0 ${ORBIT_RADIUS * 2 + 10} ${ORBIT_RADIUS * 2 + 10}`}
+                >
+                  <circle
+                    cx={ORBIT_RADIUS + 5}
+                    cy={ORBIT_RADIUS + 5}
+                    r={ORBIT_RADIUS}
+                    fill="none"
+                    stroke="var(--border)"
+                    strokeWidth="1"
+                    strokeDasharray="3 9"
+                    opacity="0.6"
+                  />
+                </motion.svg>
 
-              {/* Orbiting tech cards */}
-              {ORBIT_TECHS.map((tech, i) => (
-                <OrbitCard key={tech} tech={tech} index={i} total={ORBIT_TECHS.length} />
-              ))}
+                {ORBIT_TECHS.map((tech, i) => (
+                  <OrbitCard key={tech} tech={tech} index={i} total={ORBIT_TECHS.length} />
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
@@ -324,7 +324,23 @@ export default function Hero({ data }: Props) {
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
         @keyframes spin  { to { transform: rotate(360deg); } }
         @media(max-width:580px){ [data-stats] { grid-template-columns:repeat(2,1fr) !important; } }
-        @media(max-width:768px){ .hero-photo-wrap { display: none; } }
+        @media(max-width:768px){
+          .hero-content {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 40px !important;
+          }
+          .hero-photo-wrap {
+            display: flex !important;
+            justify-content: center;
+            order: -1;
+          }
+          .hero-photo-container {
+            width: 200px !important;
+            height: 200px !important;
+          }
+          .hero-orbit { display: none !important; }
+        }
       `}</style>
     </section>
   )
