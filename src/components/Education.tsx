@@ -31,7 +31,14 @@ export default function Education({ education, learnings }: Props) {
               <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontFamily: 'var(--font-heading)' }}>
                 {education.degree}
               </div>
-              <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 4 }}>{education.college}</div>
+              <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                {education.college.includes('Mumbai University')
+                  ? <>
+                      {education.college.replace('Mumbai University', '')}
+                      <span style={{ color: 'var(--accent)', fontWeight: 600 }}>Mumbai University</span>
+                    </>
+                  : education.college}
+              </div>
               <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>{education.location}</div>
               <motion.div
                 initial={{ scale: 0.88, opacity: 0 }}
