@@ -48,7 +48,10 @@ function FeaturedCard({ project }: { project: Project }) {
   }, [shots.length])
 
   const rightPanel = shots.length > 0 ? (
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <div
+      style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in' }}
+      onClick={e => { e.stopPropagation(); navigate(`/project/${project.id}`, { state: { scrollToScreenshots: true } }) }}
+    >
       {/* Left-edge fade */}
       <div style={{
         position: 'absolute', top: 0, left: 0, bottom: 0, width: 60, zIndex: 2,

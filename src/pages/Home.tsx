@@ -10,6 +10,8 @@ import Education from '../components/Education'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 import PageBg from '../components/PageBg'
+import Loader from '../components/Loader'
+import Achievements from '../components/Achievements'
 
 const SCROLL_KEY = 'home-scroll-y'
 
@@ -50,17 +52,7 @@ export default function Home() {
   }
 
   if (!data) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: '50%',
-          border: '2px solid var(--border)',
-          borderTopColor: 'var(--accent)',
-          animation: 'spin 0.8s linear infinite',
-        }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    )
+    return <Loader />
   }
 
   return (
@@ -71,8 +63,10 @@ export default function Home() {
         <Hero data={data.personal} />
         <About data={data.personal} />
         <Skills skills={data.skills} aiTools={data.aiTools} />
+        <Achievements stats={data.personal.stats} github={data.personal.social.github} />
         <Experience experiences={data.workExperience} />
-        <PersonalProjects projects={data.personalProjects} contributions={data.contributions} />
+        <PersonalProjects projects={data.personalProjects} />
+
         <Education education={data.education} learnings={data.learnings} />
         <Contact data={data.personal} />
       </main>

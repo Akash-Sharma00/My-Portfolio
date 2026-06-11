@@ -5,6 +5,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import ScrollToTop from './components/ScrollToTop'
 import ResumeDownloadFAB from './components/ResumeDownloadFAB'
 import ScrollToTopButton from './components/ScrollToTopButton'
+import ScrollProgress from './components/ScrollProgress'
 import './App.css'
 
 // Set initial theme before first paint
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <ScrollProgress />
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />

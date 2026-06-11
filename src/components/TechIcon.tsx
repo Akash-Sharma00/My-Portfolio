@@ -49,6 +49,7 @@ export const TECH_MAP: Record<string, TechDef> = {
   // Text-badge fallbacks
   'BLOC':                           { color: '#62B2F0', label: 'BLoC' },
   'Zustand':                        { color: '#FF8C66', label: 'Zus' },
+  'Riverpod':                       { color: '#3B82F6', label: 'Rvp' },
   'Provider':                       { color: '#54C5F8', label: 'Prv' },
   'Hive':                           { color: '#F6C90E', label: 'Hive' },
   'SQL':                            { color: '#336791', label: 'SQL' },

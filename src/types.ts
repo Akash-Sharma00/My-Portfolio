@@ -95,13 +95,23 @@ export interface Education {
   cgpa: string;
 }
 
+export interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  company?: string;
+  avatar?: string;
+  linkedin?: string;
+}
+
 export interface Portfolio {
   personal: Personal;
   skills: Record<string, string[]>;
   aiTools: string[];
   workExperience: WorkExperience[];
   personalProjects: PersonalProject[];
-  contributions: Contribution[];
+  contributions?: Contribution[];
   education: Education;
   learnings: string[];
+  testimonials?: Testimonial[];
 }

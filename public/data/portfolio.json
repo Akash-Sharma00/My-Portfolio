@@ -45,6 +45,7 @@
       "Flutter",
       "Dart",
       "BLOC",
+      "Riverpod",
       "Provider",
       "Play Store",
       "App Store"
@@ -529,6 +530,101 @@
           ],
           "color": "#818cf8",
           "featured": true
+        },
+        {
+          "id": "she",
+          "name": "SHE — Safety Health Empowerment",
+          "company": "Anjita It Solution",
+          "type": "Healthcare App",
+          "summary": "Health guidelines, Q&A, polls, and notifications app designed specifically for pregnant women.",
+          "description": "SHE is a Flutter app built for pregnant women. It surfaces health guidelines, runs Q&A flows, hosts polls, and sends timely push notifications — all in a calm, accessible interface.",
+          "impact": "Live on Play Store & App Store",
+          "impactDetail": "",
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Firebase"
+          ],
+          "features": [
+            "Health guidelines for each trimester",
+            "Q&A with medical content",
+            "Polls & surveys",
+            "Push notifications",
+            "Clean, accessible UI"
+          ],
+          "links": {
+            "playstore": "https://play.google.com/store/apps/details?id=dha.she",
+            "appstore": "https://apps.apple.com/in/app/she-safety-health-empowerment/id6471245331"
+          },
+          "screenshots": [
+            "/images/she/unnamed.webp",
+            "/images/she/unnamed (1).webp",
+            "/images/she/unnamed (2).webp",
+            "/images/she/unnamed (3).webp",
+            "/images/she/unnamed (4).webp"
+          ],
+          "color": "#f472b6",
+          "featured": true
+        },
+        {
+          "id": "patients-union",
+          "name": "Patient's Union",
+          "company": "Anjita It Solution",
+          "type": "Community App",
+          "summary": "Community forum where patients share experiences, post opinions, and connect with others who understand their journey.",
+          "description": "Patient's Union is a patient-first social platform. Users share experiences, participate in discussions, and find community with others going through similar health journeys. Built in Flutter.",
+          "impact": "Live on Play Store & App Store",
+          "impactDetail": "",
+          "tech": [
+            "Flutter",
+            "Dart",
+            "Firebase"
+          ],
+          "features": [
+            "Patient experience sharing",
+            "Discussion threads",
+            "Poll & opinion features",
+            "Push notifications",
+            "Profile & privacy controls"
+          ],
+          "links": {
+            "playstore": "https://play.google.com/store/apps/details?id=patients.union",
+            "appstore": "https://apps.apple.com/in/app/patients-union/id6449766453"
+          },
+          "screenshots": [
+            "/images/pateints-union/unnamed (5).webp",
+            "/images/pateints-union/unnamed (6).webp",
+            "/images/pateints-union/unnamed (7).webp",
+            "/images/pateints-union/unnamed (8).webp"
+          ],
+          "color": "#60a5fa",
+          "featured": true
+        },
+        {
+          "id": "lms-in-app",
+          "name": "LMS In App",
+          "company": "Anjita It Solution",
+          "type": "EdTech Feature",
+          "summary": "Learning management system module with Flutter WebView, SCORM/xAPI support, and offline course downloads.",
+          "description": "A Flutter-based LMS module integrating WebView for course delivery with full SCORM and xAPI tracking. Courses can be downloaded for offline use, making it viable for low-connectivity environments.",
+          "impact": "SCORM + xAPI + Offline support",
+          "impactDetail": "",
+          "tech": [
+            "Flutter",
+            "Dart",
+            "SCORM",
+            "XAPI"
+          ],
+          "features": [
+            "Flutter WebView course player",
+            "SCORM compliance",
+            "xAPI event tracking",
+            "Offline course download",
+            "JavaScript bridge integration"
+          ],
+          "links": {},
+          "color": "#818cf8",
+          "featured": false
         }
       ]
     },
@@ -565,8 +661,18 @@
           "links": {
             "playstore": "https://play.google.com/store/apps/details?id=com.tz.daily.journal.diary.secret.book.note.lock&hl=en&gl=US"
           },
+          "screenshots": [
+            "/images/daily-journal/01.webp",
+            "/images/daily-journal/02.webp",
+            "/images/daily-journal/03.webp",
+            "/images/daily-journal/04.webp",
+            "/images/daily-journal/05.webp",
+            "/images/daily-journal/06.webp",
+            "/images/daily-journal/07.webp",
+            "/images/daily-journal/08.webp"
+          ],
           "color": "#fb923c",
-          "featured": false
+          "featured": true
         },
         {
           "id": "numerology",
@@ -811,44 +917,6 @@
       "color": "#4ade80"
     }
   ],
-  "contributions": [
-    {
-      "name": "SHE",
-      "description": "Health guidelines, Q&A, polls, and notifications for pregnant women.",
-      "links": {
-        "playstore": "https://play.google.com/store/apps/details?id=dha.she",
-        "appstore": "https://apps.apple.com/in/app/she-safety-health-empowerment/id6471245331"
-      },
-      "color": "#f472b6",
-      "screenshots": [
-        "/images/she/unnamed.webp",
-        "/images/she/unnamed (1).webp",
-        "/images/she/unnamed (2).webp",
-        "/images/she/unnamed (3).webp",
-        "/images/she/unnamed (4).webp"
-      ]
-    },
-    {
-      "name": "Patient's Union",
-      "description": "Community forum for patients to share experiences and opinions.",
-      "links": {
-        "playstore": "https://play.google.com/store/apps/details?id=patients.union",
-        "appstore": "https://apps.apple.com/in/app/patients-union/id6449766453"
-      },
-      "color": "#60a5fa",
-      "screenshots": [
-        "/images/pateints-union/unnamed (5).webp",
-        "/images/pateints-union/unnamed (6).webp",
-        "/images/pateints-union/unnamed (7).webp",
-        "/images/pateints-union/unnamed (8).webp"
-      ]
-    },
-    {
-      "name": "LMS In App",
-      "description": "Learning management system with Flutter WebView, SCORM, JavaScript, XAPI support, and offline course download.",
-      "links": {}
-    }
-  ],
   "education": {
     "degree": "Bachelor of Science — Information Technology",
     "college": "Nirmala Memorial Foundation College - Mumbai University",
@@ -865,5 +933,28 @@
     "Project Leadership & Development",
     "Authentication Systems",
     "Scratch-to-Production Delivery"
+  ],
+  "testimonials": [
+    {
+      "quote": "SAMPLE — replace with a real quote. Akash owned our Flutter app end to end and consistently shipped clean, reliable features ahead of schedule.",
+      "name": "Sample Name",
+      "role": "Engineering Manager",
+      "company": "Company Name",
+      "linkedin": ""
+    },
+    {
+      "quote": "SAMPLE — replace with a real quote. He led the frontend team with calm and clarity, and our booking portal scaled to lakhs of daily orders without drama.",
+      "name": "Sample Name",
+      "role": "Product Lead",
+      "company": "Company Name",
+      "linkedin": ""
+    },
+    {
+      "quote": "SAMPLE — replace with a real quote. Rare mix of speed and ownership. Akash takes a vague problem and returns a production-ready solution.",
+      "name": "Sample Name",
+      "role": "Founder",
+      "company": "Startup Name",
+      "linkedin": ""
+    }
   ]
 }

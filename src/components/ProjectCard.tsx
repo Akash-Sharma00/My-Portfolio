@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react'
 import { EASE } from '../utils/motion'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { PersonalProject } from '../types'
 import { TechBadge } from './TechIcon'
 import LinkButtons from './LinkButtons'
@@ -67,10 +68,87 @@ function CategoryIcon({ category, color }: { category: string; color: string }) 
   }
 }
 
-export default function ProjectCard({ project, index = 0 }: Props) {
-  const navigate = useNavigate()
+function Lightbox({ shots, active, color, name, onClose, onPrev, onNext }: {
+  shots: string[]; active: number; color: string; name: string;
+  onClose: () => void; onPrev: () => void; onNext: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') onPrev()
+      else if (e.key === 'ArrowRight') onNext()
+      else if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose, onPrev, onNext])
 
   return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        cursor: 'zoom-out', padding: '60px 80px 80px',
+      }}
+    >
+      <button onClick={onClose} style={lbBtn({ position: 'fixed', top: 20, right: 20 })}>✕</button>
+      {shots.length > 1 && (
+        <button onClick={e => { e.stopPropagation(); onPrev() }} style={lbBtn({ position: 'fixed', left: 20, top: '50%', transform: 'translateY(-50%)' })}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+      )}
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={active}
+          src={shots[active]}
+          alt={`${name} ${active + 1}`}
+          initial={{ opacity: 0, scale: 0.94, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: -12 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          onClick={e => e.stopPropagation()}
+          style={{ maxWidth: '90vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: 12, boxShadow: `0 0 0 1px ${color}30, 0 40px 100px rgba(0,0,0,0.6)`, cursor: 'default' }}
+        />
+      </AnimatePresence>
+      {shots.length > 1 && (
+        <button onClick={e => { e.stopPropagation(); onNext() }} style={lbBtn({ position: 'fixed', right: 20, top: '50%', transform: 'translateY(-50%)' })}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+        </button>
+      )}
+      {shots.length > 1 && (
+        <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span>{active + 1} / {shots.length}</span>
+          <span style={{ opacity: 0.4 }}>·</span><span>ESC to close</span>
+          <span style={{ opacity: 0.4 }}>·</span><span>← → navigate</span>
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
+function lbBtn(extra: React.CSSProperties): React.CSSProperties {
+  return { zIndex: 1001, width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', ...extra }
+}
+
+export default function ProjectCard({ project, index = 0 }: Props) {
+  const navigate = useNavigate()
+  const shots = project.screenshots ?? []
+  const [lightbox, setLightbox] = useState<number | null>(null)
+  const prev = () => setLightbox(i => i !== null ? (i - 1 + shots.length) % shots.length : null)
+  const next = () => setLightbox(i => i !== null ? (i + 1) % shots.length : null)
+
+  return (
+    <>
+    <AnimatePresence>
+      {lightbox !== null && (
+        <Lightbox shots={shots} active={lightbox} color={project.color} name={project.name}
+          onClose={() => setLightbox(null)} onPrev={prev} onNext={next} />
+      )}
+    </AnimatePresence>
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -188,9 +266,47 @@ export default function ProjectCard({ project, index = 0 }: Props) {
           </div>
         </div>
 
+        {/* Screenshot strip — only shown for projects that have images */}
+        {shots.length > 0 && (
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ marginBottom: 12 }}
+          >
+            <div style={{
+              fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)',
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 7, fontWeight: 500,
+            }}>
+              Screenshots
+            </div>
+            <div style={{
+              display: 'flex', gap: 6,
+              overflowX: 'auto', scrollbarWidth: 'none',
+              paddingBottom: 2,
+            }}>
+              {shots.map((src, j) => (
+                <motion.img
+                  key={j}
+                  src={src}
+                  alt={`${project.name} ${j + 1}`}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={() => setLightbox(j)}
+                  style={{
+                    height: 72, width: 'auto', flexShrink: 0,
+                    borderRadius: 6, objectFit: 'cover',
+                    border: `1px solid ${project.color}30`,
+                    cursor: 'zoom-in',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Action buttons */}
         <LinkButtons links={project.links} color={project.color} onNavigate={() => navigate(`/project/${project.id}`)} />
       </div>
     </motion.div>
+    </>
   )
 }

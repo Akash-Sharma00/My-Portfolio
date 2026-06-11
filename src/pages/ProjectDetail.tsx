@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Portfolio, Project, PersonalProject } from '../types'
 import Navbar from '../components/Navbar'
@@ -88,11 +88,13 @@ function ScreenshotGallery({
   const [lightbox, setLightbox] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
   const thumbsRef = useRef<HTMLDivElement>(null)
+  const didMountRef = useRef(false)
 
   const prev = () => { setImgLoaded(false); setActive(i => (i - 1 + screenshots.length) % screenshots.length) }
   const next = () => { setImgLoaded(false); setActive(i => (i + 1) % screenshots.length) }
 
   useEffect(() => {
+    if (!didMountRef.current) { didMountRef.current = true; return }
     const strip = thumbsRef.current
     if (!strip) return
     const thumb = strip.children[active] as HTMLElement
@@ -387,8 +389,10 @@ const card: React.CSSProperties = {
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>()
+  const { state } = useLocation()
   const [data, setData] = useState<Portfolio | null>(null)
   const [project, setProject] = useState<AnyProject | null>(null)
+  const screenshotsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/data/portfolio.json')
@@ -398,6 +402,11 @@ export default function ProjectDetail() {
         if (id) setProject(findProject(d, id))
       })
   }, [id])
+
+  useEffect(() => {
+    if (!project || !state?.scrollToScreenshots || !screenshotsRef.current) return
+    screenshotsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [project, state])
 
   if (!data) {
     return (
@@ -659,7 +668,7 @@ export default function ProjectDetail() {
 
           {/* ── 8. Screenshots — last ────────────────────────── */}
           {project.screenshots && project.screenshots.length > 0 && (
-            <div style={{ marginTop: 40, paddingTop: 40, borderTop: '1px solid var(--border)' }}>
+            <div ref={screenshotsRef} style={{ marginTop: 40, paddingTop: 40, borderTop: '1px solid var(--border)' }}>
               <ScreenshotGallery
                 screenshots={project.screenshots}
                 captions={(project as typeof project & { screenshotCaptions?: string[] }).screenshotCaptions}

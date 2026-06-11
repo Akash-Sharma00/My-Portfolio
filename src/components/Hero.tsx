@@ -3,6 +3,8 @@ import type { Personal } from '../types'
 import { EASE } from '../utils/motion'
 import TechIcon from './TechIcon'
 import { TECH_MAP } from './TechIcon'
+import Counter from './Counter'
+import TypingRoles from './TypingRoles'
 
 interface Props { data: Personal }
 
@@ -130,6 +132,23 @@ export default function Hero({ data }: Props) {
               <span style={{ color: 'var(--text-muted)' }}>{data.name.split(' ')[1]}</span>
             </motion.h1>
 
+            {/* Animated rotating roles */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+              style={{ marginBottom: 18, minHeight: 'clamp(28px, 4vw, 38px)' }}
+            >
+              <TypingRoles
+                roles={['Flutter Developer', 'Full-Stack Engineer', 'Backend Builder', 'Problem Solver']}
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(22px, 3.4vw, 34px)',
+                  fontWeight: 600, letterSpacing: '-0.02em',
+                  color: 'var(--text)',
+                }}
+              />
+            </motion.div>
+
             {/* Role + specialisations */}
             <motion.div
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -191,12 +210,14 @@ export default function Hero({ data }: Props) {
                   transition={{ delay: 0.68 + i * 0.08, ease: EASE }}
                   style={{ background: 'var(--bg-card)', padding: '20px 16px', textAlign: 'center' }}
                 >
-                  <div style={{
-                    fontFamily: 'var(--font-heading)', fontSize: 'clamp(22px, 3vw, 30px)',
-                    fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.03em',
-                  }}>
-                    {stat.value}
-                  </div>
+                  <Counter
+                    value={stat.value}
+                    style={{
+                      display: 'block',
+                      fontFamily: 'var(--font-heading)', fontSize: 'clamp(22px, 3vw, 30px)',
+                      fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.03em',
+                    }}
+                  />
                   <div style={{
                     fontFamily: 'var(--font-mono)', fontSize: 9.5, color: 'var(--text-muted)',
                     marginTop: 4, lineHeight: 1.4, textTransform: 'uppercase', letterSpacing: '0.05em',
