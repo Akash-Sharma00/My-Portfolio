@@ -1,76 +1,57 @@
-import { useState, useEffect } from 'react'
-import type { Portfolio } from '../types'
-import Navbar from '../components/Navbar'
-import Hero from '../components/Hero'
-import About from '../components/About'
-import Skills from '../components/Skills'
-import Experience from '../components/Experience'
-import PersonalProjects from '../components/PersonalProjects'
-import Education from '../components/Education'
-import Contact from '../components/Contact'
-import Footer from '../components/Footer'
-import PageBg from '../components/PageBg'
-import Loader from '../components/Loader'
-import Achievements from '../components/Achievements'
-
-const SCROLL_KEY = 'home-scroll-y'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { usePortfolioData } from '../hooks/usePortfolioData'
+import { useLenis, scrollToSection } from '../lib/SmoothScroll'
+import Hero from '../sections/Hero'
+import About from '../sections/About'
+import Skills from '../sections/Skills'
+import Projects from '../sections/Projects'
+import Achievements from '../sections/Achievements'
+import Lab from '../sections/Lab'
+import Contact from '../sections/Contact'
 
 export default function Home() {
-  const [data, setData] = useState<Portfolio | null>(null)
-  const [error, setError] = useState(false)
+  const { data, error } = usePortfolioData()
+  const location = useLocation()
+  const lenis = useLenis()
 
-  // Persist scroll position so "back" returns to the same spot
-  useEffect(() => {
-    const save = () => sessionStorage.setItem(SCROLL_KEY, String(window.scrollY))
-    window.addEventListener('scroll', save, { passive: true })
-    return () => window.removeEventListener('scroll', save)
-  }, [])
-
-  useEffect(() => {
-    fetch('/data/portfolio.json')
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => setError(true))
-  }, [])
-
-  // Restore scroll after data renders
+  // Layout settles after data + images arrive — recompute pinned scroll scenes
   useEffect(() => {
     if (!data) return
-    const saved = sessionStorage.getItem(SCROLL_KEY)
-    if (saved) {
-      const y = parseInt(saved, 10)
-      requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'instant' }))
-    }
+    const t = setTimeout(() => ScrollTrigger.refresh(), 600)
+    return () => clearTimeout(t)
   }, [data])
+
+  // Arriving from another page with a target section
+  useEffect(() => {
+    const target = (location.state as { scrollTo?: string } | null)?.scrollTo
+    if (!data || !target) return
+    const t = setTimeout(() => scrollToSection(lenis.current, `#${target}`), 700)
+    return () => clearTimeout(t)
+  }, [data, location.state, lenis])
 
   if (error) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Could not load portfolio data.</p>
-      </div>
+      <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+        <p className="mono" style={{ color: 'var(--ink-dim)' }}>
+          Transmission failed — {error}
+        </p>
+      </main>
     )
   }
 
-  if (!data) {
-    return <Loader />
-  }
+  if (!data) return null
 
   return (
-    <>
-      <PageBg color="#ff6535" />
-      <Navbar />
-      <main>
-        <Hero data={data.personal} />
-        <About data={data.personal} />
-        <Skills skills={data.skills} aiTools={data.aiTools} />
-        <Achievements stats={data.personal.stats} github={data.personal.social.github} />
-        <Experience experiences={data.workExperience} />
-        <PersonalProjects projects={data.personalProjects} />
-
-        <Education education={data.education} learnings={data.learnings} />
-        <Contact data={data.personal} />
-      </main>
-      <Footer />
-    </>
+    <main>
+      <Hero personal={data.personal} />
+      <About personal={data.personal} workExperience={data.workExperience} education={data.education} />
+      <Skills data={data} />
+      <Projects workExperience={data.workExperience} />
+      <Achievements personal={data.personal} education={data.education} />
+      <Lab projects={data.personalProjects} learnings={data.learnings} />
+      <Contact personal={data.personal} />
+    </main>
   )
 }

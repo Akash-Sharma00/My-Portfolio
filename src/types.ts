@@ -115,3 +115,5 @@ export interface Portfolio {
   learnings: string[];
   testimonials?: Testimonial[];
 }
+
+export type PortfolioData = Portfolio;
