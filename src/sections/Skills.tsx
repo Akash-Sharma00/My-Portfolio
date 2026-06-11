@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useInView } from 'framer-motion'
 import type { PortfolioData } from '../types'
 import { SectionHead } from '../components/Section'
 import { usePrefersReducedMotion } from '../hooks/useMedia'
+import { SKILL_ICONS } from '../lib/skillIcons'
 import type { GalaxyCategory, GalaxySelection } from '../components/three/SkillsGalaxy'
 
 const SkillsGalaxy = lazy(() => import('../components/three/SkillsGalaxy'))
@@ -37,6 +38,7 @@ export default function Skills({ data }: { data: PortfolioData }) {
   }, [data])
 
   const reading = hovered ?? focus
+  const ReadingIcon = reading ? SKILL_ICONS[reading.skill] : null
 
   return (
     <section id="skills" className="section" ref={ref}>
@@ -47,12 +49,37 @@ export default function Skills({ data }: { data: PortfolioData }) {
             A galaxy of <span className="text-aurora">technologies.</span>
           </>
         }
-        sub="Every orbit is a discipline. Drag to rotate the system, hover a node to scan it, tap a category to isolate its ring."
+        sub="Every orbit is a discipline. Drag to rotate the system, hover a cube to scan it, tap a category to isolate its ring."
       />
 
-      <div className="galaxy-wrap">
-        <div className="galaxy-canvas" data-cursor="link">
-          {inView && !reduced && (
+      <div className="galaxy-filters" role="tablist" aria-label="Skill categories">
+        <button
+          className={`cat-chip${active === null ? ' active' : ''}`}
+          data-cursor="link"
+          onClick={() => setActive(null)}
+        >
+          <span className="dot" style={{ background: 'var(--ink)', boxShadow: '0 0 10px var(--ink)' }} />
+          All systems
+          <span className="count">{String(categories.reduce((n, c) => n + c.skills.length, 0)).padStart(2, '0')}</span>
+        </button>
+        {categories.map((c) => (
+          <button
+            key={c.name}
+            className={`cat-chip${active === c.name ? ' active' : ''}`}
+            data-cursor="link"
+            style={{ ['--cc' as string]: c.color }}
+            onClick={() => setActive(active === c.name ? null : c.name)}
+          >
+            <span className="dot" style={{ background: c.color, boxShadow: `0 0 10px ${c.color}` }} />
+            {c.name}
+            <span className="count">{String(c.skills.length).padStart(2, '0')}</span>
+          </button>
+        ))}
+      </div>
+
+      {!reduced ? (
+        <div className="galaxy-canvas galaxy-full" data-cursor="link">
+          {inView && (
             <Suspense fallback={null}>
               <SkillsGalaxy
                 categories={categories}
@@ -62,54 +89,29 @@ export default function Skills({ data }: { data: PortfolioData }) {
               />
             </Suspense>
           )}
-          {reduced && (
-            <div style={{ padding: 28, display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'flex-start' }}>
-              {categories.flatMap((c) =>
-                c.skills.map((s) => (
-                  <span key={c.name + s} className="chip" style={{ borderColor: `${c.color}55` }}>
-                    {s}
-                  </span>
-                )),
-              )}
-            </div>
-          )}
-          <span className="galaxy-hud">SYS · {categories.reduce((n, c) => n + c.skills.length, 0)} NODES / {categories.length} ORBITS</span>
-        </div>
 
-        <div className="galaxy-panel glass scanlines">
-          <span className="sys-label">Orbit Index</span>
-          <h3>System map</h3>
-          <div className="cat-list">
-            {categories.map((c) => (
-              <button
-                key={c.name}
-                className={`cat-row${active === c.name ? ' active' : ''}`}
-                data-cursor="link"
-                onClick={() => setActive(active === c.name ? null : c.name)}
-              >
-                <span className="dot" style={{ background: c.color, boxShadow: `0 0 10px ${c.color}` }} />
-                <span className="name">{c.name}</span>
-                <span className="count">{String(c.skills.length).padStart(2, '0')}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="galaxy-readout">
+          <div className="galaxy-readout-float glass">
             <AnimatePresence mode="wait">
               {reading ? (
                 <motion.div
                   key={reading.skill}
+                  className="ro-row"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <div className="ro-name" style={{ color: reading.color }}>
-                    {reading.skill}
-                  </div>
-                  <div className="ro-cat" style={{ color: 'var(--ink-faint)' }}>
-                    ORBIT · {reading.category.toUpperCase()}
-                  </div>
+                  {ReadingIcon && (
+                    <span className="ro-icon" style={{ color: reading.color, borderColor: `${reading.color}66` }}>
+                      <ReadingIcon size={22} />
+                    </span>
+                  )}
+                  <span>
+                    <span className="ro-name" style={{ color: reading.color }}>
+                      {reading.skill}
+                    </span>
+                    <span className="ro-cat">ORBIT · {reading.category.toUpperCase()}</span>
+                  </span>
                 </motion.div>
               ) : (
                 <motion.p
@@ -119,14 +121,38 @@ export default function Skills({ data }: { data: PortfolioData }) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  Hover or tap a node in the galaxy to scan it. Production experience across the
-                  full stack — mobile, web, backend, and AI tooling.
+                  Hover a cube to scan it — production experience across mobile, web, backend, and AI tooling.
                 </motion.p>
               )}
             </AnimatePresence>
           </div>
+
+          <span className="galaxy-hud">
+            SYS · {categories.reduce((n, c) => n + c.skills.length, 0)} NODES / {categories.length} ORBITS
+          </span>
         </div>
-      </div>
+      ) : (
+        <div className="galaxy-static">
+          {categories
+            .filter((c) => active === null || c.name === active)
+            .map((c) => (
+              <div key={c.name} className="galaxy-static-group">
+                <h4 style={{ color: c.color }}>{c.name}</h4>
+                <div className="galaxy-static-chips">
+                  {c.skills.map((s) => {
+                    const Icon = SKILL_ICONS[s]
+                    return (
+                      <span key={s} className="chip" style={{ borderColor: `${c.color}55` }}>
+                        {Icon && <Icon size={14} style={{ color: c.color }} />}
+                        {s}
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+        </div>
+      )}
     </section>
   )
 }

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import type { PersonalProject } from '../types'
 import { SectionHead } from '../components/Section'
 import Tilt from '../components/Tilt'
@@ -16,6 +17,8 @@ export default function Lab({
   projects: PersonalProject[]
   learnings: string[]
 }) {
+  const navigate = useNavigate()
+
   return (
     <section id="lab" className="section">
       <SectionHead
@@ -25,7 +28,7 @@ export default function Lab({
             Built after hours, <span className="text-aurora">for the love of it.</span>
           </>
         }
-        sub="Open-source platforms, published packages, and experiments — the playground where new ideas get pressure-tested before they reach production."
+        sub="Open-source platforms, published packages, and experiments — the playground where new ideas get pressure-tested before they reach production. Open any card for the full story."
       />
 
       <div className="lab-grid">
@@ -38,7 +41,27 @@ export default function Lab({
             transition={{ duration: 0.8, delay: (i % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
             <Tilt max={6}>
-              <article className="lab-card glass holo-border scanlines" style={{ ['--pc' as string]: p.color }}>
+              <article
+                className="lab-card glass holo-border scanlines"
+                style={{ ['--pc' as string]: p.color }}
+                data-cursor="view"
+                role="link"
+                tabIndex={0}
+                aria-label={`Open ${p.name} details`}
+                onClick={() => navigate(`/project/${p.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    navigate(`/project/${p.id}`)
+                  }
+                }}
+              >
+                {p.screenshots && p.screenshots.length > 0 && (
+                  <div className="lc-shot">
+                    <img src={p.screenshots[0]} alt={`${p.name} preview`} loading="lazy" />
+                    <span className="lc-shot-count">◉ {p.screenshots.length} shots</span>
+                  </div>
+                )}
                 <span className="lc-cat">{p.type}</span>
                 <h4>{p.name}</h4>
                 <p>{p.summary}</p>
@@ -51,19 +74,24 @@ export default function Lab({
                 <div className="lc-links">
                   {Object.entries(p.links)
                     .filter(([, url]) => url && url !== '#')
-                    .map(([kind, url]) => (
+                    .map(([kind, url], li) => (
                       <a
                         key={kind}
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="chip"
+                        className="link-btn"
                         data-cursor="link"
+                        style={{ ['--d' as string]: `${li * 0.45}s` }}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         {LINK_LABELS[kind] ?? `${kind} ↗`}
                       </a>
                     ))}
                 </div>
+                <span className="lc-open">
+                  Open case file <span className="arrow">→</span>
+                </span>
               </article>
             </Tilt>
           </motion.div>

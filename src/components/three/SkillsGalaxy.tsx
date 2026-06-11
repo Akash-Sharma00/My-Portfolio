@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { createElement, useEffect, useMemo, useRef, useState } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
+import { SKILL_ICONS } from '../../lib/skillIcons'
 import { useIsMobile } from '../../hooks/useMedia'
 
 export interface GalaxyCategory {
@@ -20,53 +22,144 @@ interface NodeDef {
   skill: string
   category: string
   color: string
-  ringIndex: number
   angle: number
+  lift: number
 }
 
-/** Paint a glass chip label onto a canvas and wrap it as a sprite texture. */
-function makeChipTexture(text: string, color: string) {
-  const scale = 4
-  const font = `600 ${13 * scale}px "Space Grotesk", "Inter", sans-serif`
-  const padX = 14 * scale
-  const padY = 9 * scale
+/** One billboard texture per tech: a circular holo-coin (glass disc, glowing
+ *  category rim, brand icon) with the name plate fused underneath. Draws a
+ *  monogram immediately, swaps in the rasterized SVG icon when it loads. */
+function makeBadgeTexture(skill: string, color: string) {
+  const S = 3 // supersample for crisp text
+  const disc = 64 * S
+  const discR = disc / 2
+  const gap = 7 * S
+  const pillH = 26 * S
+  const pillFont = `600 ${12.5 * S}px "Space Grotesk", "Inter", sans-serif`
+  const pillPadX = 12 * S
 
   const measure = document.createElement('canvas').getContext('2d')!
-  measure.font = font
-  const textW = measure.measureText(text).width
-  const w = Math.ceil(textW + padX * 2)
-  const h = Math.ceil(13 * scale + padY * 2)
+  measure.font = pillFont
+  const pillW = Math.ceil(measure.measureText(skill).width + pillPadX * 2)
+
+  const w = Math.max(disc + 12 * S, pillW + 4 * S)
+  const h = disc + gap + pillH + 6 * S
+  const cx = w / 2
+  const cy = discR + 3 * S
 
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
   const ctx = canvas.getContext('2d')!
-  const r = h / 2
 
-  ctx.beginPath()
-  ctx.roundRect(scale, scale, w - scale * 2, h - scale * 2, r)
-  ctx.fillStyle = 'rgba(10, 11, 24, 0.92)'
-  ctx.fill()
-  ctx.lineWidth = scale
-  ctx.strokeStyle = color
-  ctx.shadowColor = color
-  ctx.shadowBlur = 6 * scale
-  ctx.stroke()
-  ctx.shadowBlur = 0
+  const drawBase = () => {
+    ctx.clearRect(0, 0, w, h)
 
-  ctx.font = font
-  ctx.fillStyle = '#eef0ff'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(text, w / 2, h / 2 + scale)
+    // Glass disc
+    const bg = ctx.createRadialGradient(cx, cy - discR * 0.35, discR * 0.1, cx, cy, discR)
+    bg.addColorStop(0, 'rgba(30, 32, 56, 0.97)')
+    bg.addColorStop(1, 'rgba(8, 9, 20, 0.97)')
+    ctx.beginPath()
+    ctx.arc(cx, cy, discR - 2 * S, 0, Math.PI * 2)
+    ctx.fillStyle = bg
+    ctx.fill()
+
+    // Category rim with glow
+    ctx.lineWidth = 2.5 * S
+    ctx.strokeStyle = color
+    ctx.shadowColor = color
+    ctx.shadowBlur = 10 * S
+    ctx.stroke()
+    ctx.shadowBlur = 0
+
+    // Faint inner ring for depth
+    ctx.beginPath()
+    ctx.arc(cx, cy, discR - 7 * S, 0, Math.PI * 2)
+    ctx.lineWidth = S * 0.8
+    ctx.strokeStyle = 'rgba(140, 150, 255, 0.22)'
+    ctx.stroke()
+
+    // Name plate
+    const px = (w - pillW) / 2
+    const py = disc + gap
+    ctx.beginPath()
+    ctx.roundRect(px, py, pillW, pillH, pillH / 2)
+    ctx.fillStyle = 'rgba(8, 9, 20, 0.92)'
+    ctx.fill()
+    ctx.lineWidth = S * 0.8
+    ctx.strokeStyle = `${color}99`
+    ctx.stroke()
+
+    ctx.font = pillFont
+    ctx.fillStyle = '#eef0ff'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(skill, cx, py + pillH / 2 + S)
+  }
+
+  const drawMono = () => {
+    const words = skill.split(/[\s/]+/).filter(Boolean)
+    const mono = (words.length > 1 ? words[0][0] + words[1][0] : skill.slice(0, 2)).toUpperCase()
+    ctx.font = `700 ${24 * S}px "Space Grotesk", "Inter", sans-serif`
+    ctx.fillStyle = '#eef0ff'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(mono, cx, cy + S)
+  }
+
+  drawBase()
+  drawMono()
 
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   texture.anisotropy = 4
+
+  const Icon = SKILL_ICONS[skill]
+  if (Icon) {
+    const svg = renderToStaticMarkup(createElement(Icon, { color: '#eef0ff', size: 256 }))
+    const img = new Image()
+    img.onload = () => {
+      drawBase()
+      const iconSize = disc * 0.5
+      ctx.drawImage(img, cx - iconSize / 2, cy - iconSize / 2, iconSize, iconSize)
+      texture.needsUpdate = true
+    }
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+  }
+
   return { texture, aspect: w / h }
 }
 
-function SkillNode({
+/* Orbit line with a comet pulse sweeping around it — alpha peaks at the
+   tracer head and decays into a tail behind it. */
+const ORBIT_VERT = /* glsl */ `
+  attribute float aT;
+  varying float vT;
+  void main() {
+    vT = aT;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`
+
+const ORBIT_FRAG = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uTime;
+  uniform float uBase;
+  uniform float uSpeed;
+  uniform float uPhase;
+  varying float vT;
+  void main() {
+    float d = fract(vT - uTime * uSpeed - uPhase);
+    float pulse = exp(-d * 16.0);
+    vec3 col = mix(uColor, vec3(1.0), pulse * 0.55);
+    float alpha = uBase + pulse * uBase * 3.2;
+    gl_FragColor = vec4(col, alpha);
+  }
+`
+
+const BADGE_H = 1.5
+
+function SkillBadge({
   def,
   radius,
   dimmed,
@@ -83,12 +176,8 @@ function SkillNode({
   const [hovered, setHovered] = useState(false)
 
   const { material, aspect } = useMemo(() => {
-    const { texture, aspect } = makeChipTexture(def.skill, def.color)
-    const material = new THREE.SpriteMaterial({
-      map: texture,
-      transparent: true,
-      depthWrite: false,
-    })
+    const { texture, aspect } = makeBadgeTexture(def.skill, def.color)
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false })
     return { material, aspect }
   }, [def.skill, def.color])
 
@@ -99,15 +188,17 @@ function SkillNode({
     }
   }, [material])
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!ref.current) return
-    const base = 0.62
-    const target = hovered ? base * 1.45 : base
-    const cur = ref.current.scale.y
-    const next = cur + (target - cur) * Math.min(delta * 9, 1)
+    const target = hovered ? BADGE_H * 1.3 : BADGE_H
+    const next = ref.current.scale.y + (target - ref.current.scale.y) * Math.min(delta * 9, 1)
     ref.current.scale.set(next * aspect, next, 1)
+
+    // Gentle bob so the field feels alive without tumbling
+    ref.current.position.y = def.lift + Math.sin(state.clock.elapsedTime * 0.8 + def.angle * 5) * 0.08
+
     const mat = ref.current.material as THREE.SpriteMaterial
-    const targetOpacity = dimmed ? 0.14 : 1
+    const targetOpacity = dimmed ? 0.1 : 1
     mat.opacity += (targetOpacity - mat.opacity) * Math.min(delta * 7, 1)
   })
 
@@ -117,8 +208,8 @@ function SkillNode({
     <sprite
       ref={ref}
       material={material}
-      position={[Math.cos(def.angle) * radius, 0, Math.sin(def.angle) * radius]}
-      scale={[0.62 * aspect, 0.62, 1]}
+      position={[Math.cos(def.angle) * radius, def.lift, Math.sin(def.angle) * radius]}
+      scale={[BADGE_H * aspect, BADGE_H, 1]}
       onPointerOver={(e) => {
         e.stopPropagation()
         setHovered(true)
@@ -162,27 +253,43 @@ function Ring({
 
   const orbitGeo = useMemo(() => {
     const pts: THREE.Vector3[] = []
+    const ts: number[] = []
     for (let i = 0; i <= 128; i++) {
       const a = (i / 128) * Math.PI * 2
       pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius))
+      ts.push(i / 128)
     }
-    return new THREE.BufferGeometry().setFromPoints(pts)
+    const geo = new THREE.BufferGeometry().setFromPoints(pts)
+    geo.setAttribute('aT', new THREE.Float32BufferAttribute(ts, 1))
+    return geo
   }, [radius])
 
   const orbitMat = useMemo(
     () =>
-      new THREE.LineBasicMaterial({
-        color: new THREE.Color(color),
+      new THREE.ShaderMaterial({
+        vertexShader: ORBIT_VERT,
+        fragmentShader: ORBIT_FRAG,
+        uniforms: {
+          uColor: { value: new THREE.Color(color) },
+          uTime: { value: 0 },
+          uBase: { value: 0.18 },
+          uSpeed: { value: 0.022 + radius * 0.0016 },
+          uPhase: { value: radius * 0.61 },
+        },
         transparent: true,
-        opacity: 0.18,
+        depthWrite: false,
       }),
-    [color],
+    [color, radius],
   )
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (spinner.current) spinner.current.rotation.y += delta * speed
-    const mat = lineRef.current?.material as THREE.LineBasicMaterial | undefined
-    if (mat) mat.opacity += ((dimmed ? 0.04 : 0.18) - mat.opacity) * Math.min(delta * 7, 1)
+    const mat = lineRef.current?.material as THREE.ShaderMaterial | undefined
+    if (mat) {
+      mat.uniforms.uTime.value = state.clock.elapsedTime
+      const base = mat.uniforms.uBase
+      base.value += ((dimmed ? 0.04 : 0.18) - base.value) * Math.min(delta * 7, 1)
+    }
   })
 
   return (
@@ -190,7 +297,7 @@ function Ring({
       <lineLoop ref={lineRef} geometry={orbitGeo} material={orbitMat} />
       <group ref={spinner}>
         {nodes.map((def) => (
-          <SkillNode
+          <SkillBadge
             key={def.skill}
             def={def}
             radius={radius}
@@ -229,14 +336,15 @@ function Core() {
   )
 }
 
+/* Gentle tilts keep every orbit legible — badges stay near the horizontal plane */
 const TILTS: [number, number, number][] = [
-  [0.18, 0, 0.1],
-  [-0.34, 0.4, 0.22],
-  [0.5, -0.3, -0.18],
-  [-0.14, 0.9, 0.34],
-  [0.66, 0.2, -0.42],
-  [-0.5, -0.6, 0.12],
-  [0.3, 1.2, 0.5],
+  [0.1, 0, 0.05],
+  [-0.16, 0.4, 0.1],
+  [0.2, -0.3, -0.08],
+  [-0.08, 0.9, 0.14],
+  [0.24, 0.2, -0.16],
+  [-0.2, -0.6, 0.07],
+  [0.14, 1.2, 0.2],
 ]
 
 export default function SkillsGalaxy({
@@ -255,23 +363,24 @@ export default function SkillsGalaxy({
   const rings = useMemo(
     () =>
       categories.map((cat, i) => {
-        const radius = 2.6 + i * 1.18
+        const radius = 2.9 + i * 1.45
         const nodes: NodeDef[] = cat.skills.map((skill, j) => ({
           skill,
           category: cat.name,
           color: cat.color,
-          ringIndex: i,
           angle: (j / cat.skills.length) * Math.PI * 2 + i * 0.7,
+          // Alternate badges above/below the ring plane so neighbours don't collide
+          lift: j % 2 === 0 ? 0.55 : -0.55,
         }))
-        return { cat, radius, nodes, tilt: TILTS[i % TILTS.length], speed: 0.05 + 0.025 * (i % 3) }
+        return { cat, radius, nodes, tilt: TILTS[i % TILTS.length], speed: 0.04 + 0.02 * (i % 3) }
       }),
     [categories],
   )
 
   return (
     <Canvas
-      dpr={[1, mobile ? 1.5 : 2]}
-      camera={{ position: [0, 4.5, 12.5], fov: 50 }}
+      dpr={[1, mobile ? 1.5 : 1.75]}
+      camera={{ position: [0, 5.5, mobile ? 24 : 19], fov: 48 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     >
       <ambientLight intensity={0.4} />
@@ -293,9 +402,9 @@ export default function SkillsGalaxy({
         enableZoom={false}
         enablePan={false}
         autoRotate
-        autoRotateSpeed={0.5}
-        minPolarAngle={Math.PI * 0.25}
-        maxPolarAngle={Math.PI * 0.7}
+        autoRotateSpeed={0.4}
+        minPolarAngle={Math.PI * 0.22}
+        maxPolarAngle={Math.PI * 0.62}
       />
     </Canvas>
   )

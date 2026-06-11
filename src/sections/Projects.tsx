@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -11,43 +11,89 @@ import { useIsMobile, usePrefersReducedMotion } from '../hooks/useMedia'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const LINK_LABELS: Record<string, string> = {
+  live: 'Live',
+  web: 'Web',
+  playstore: 'Play Store',
+  appstore: 'App Store',
+  android: 'Android',
+  ios: 'iOS',
+  github: 'GitHub',
+  pubdev: 'pub.dev',
+}
+
 function Exhibit({ project }: { project: Project }) {
+  const navigate = useNavigate()
+  const links = Object.entries(project.links)
+    .filter(([, url]) => url && url !== '#')
+    .slice(0, 3)
+
   return (
-    <Link to={`/project/${project.id}`} data-cursor="view" style={{ display: 'contents' }}>
-      <article className="exhibit glass holo-border" style={{ ['--pc' as string]: project.color }}>
-        <span className="exhibit-glow" />
-        <div className="exhibit-info">
-          <span className="ex-type">
-            {project.type} · {project.company}
-          </span>
-          <h3>{project.name}</h3>
-          <p className="ex-summary">{project.summary}</p>
-          <div className="ex-impact">{project.impact}</div>
-          <div className="ex-tech">
-            {project.tech.map((t) => (
-              <span key={t} className="chip">
-                {t}
-              </span>
+    <article
+      className="exhibit glass holo-border"
+      style={{ ['--pc' as string]: project.color }}
+      data-cursor="view"
+      role="link"
+      tabIndex={0}
+      aria-label={`Open ${project.name} case study`}
+      onClick={() => navigate(`/project/${project.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          navigate(`/project/${project.id}`)
+        }
+      }}
+    >
+      <span className="exhibit-glow" />
+      <div className="exhibit-info">
+        <span className="ex-type">
+          {project.type} · {project.company}
+        </span>
+        <h3>{project.name}</h3>
+        <p className="ex-summary">{project.summary}</p>
+        <div className="ex-impact">{project.impact}</div>
+        <div className="ex-tech">
+          {project.tech.map((t) => (
+            <span key={t} className="chip">
+              {t}
+            </span>
+          ))}
+        </div>
+        {links.length > 0 && (
+          <div className="ex-links">
+            {links.map(([kind, url], i) => (
+              <a
+                key={kind}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="link-btn"
+                data-cursor="link"
+                style={{ ['--d' as string]: `${i * 0.45}s` }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {LINK_LABELS[kind] ?? kind} ↗
+              </a>
             ))}
           </div>
-          <span className="ex-open">
-            Enter case study
-            <span className="arrow">→</span>
-          </span>
-        </div>
-        <div className="exhibit-visual">
-          <motion.div
-            style={{ width: '100%', display: 'grid', placeItems: 'center' }}
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <Tilt max={7} style={{ width: '100%', display: 'grid', placeItems: 'center' }}>
-              <DeviceFrame project={project} />
-            </Tilt>
-          </motion.div>
-        </div>
-      </article>
-    </Link>
+        )}
+        <span className="ex-open">
+          Enter case study
+          <span className="arrow">→</span>
+        </span>
+      </div>
+      <div className="exhibit-visual">
+        <motion.div
+          style={{ width: '100%', display: 'grid', placeItems: 'center' }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <Tilt max={7} style={{ width: '100%', display: 'grid', placeItems: 'center' }}>
+            <DeviceFrame project={project} />
+          </Tilt>
+        </motion.div>
+      </div>
+    </article>
   )
 }
 

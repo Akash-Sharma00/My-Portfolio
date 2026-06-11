@@ -12,6 +12,8 @@ interface Milestone {
   body: string
   chips: string[]
   accent: string
+  url?: string
+  client?: { name: string; url?: string }
 }
 
 function JourneyItem({ m, index }: { m: Milestone; index: number }) {
@@ -24,7 +26,9 @@ function JourneyItem({ m, index }: { m: Milestone; index: number }) {
         whileInView={{ scale: 1 }}
         viewport={{ once: true, margin: '-120px' }}
         transition={{ duration: 0.5, ease: EASE }}
-        style={{ borderColor: m.accent, boxShadow: `0 0 0 6px ${m.accent}1f, 0 0 22px ${m.accent}` }}
+        // x/y must live in the motion transform — a CSS translate would be
+        // overwritten by the scale animation, knocking the dot off the spine
+        style={{ x: '-50%', y: '-50%', borderColor: m.accent, boxShadow: `0 0 0 6px ${m.accent}1f, 0 0 22px ${m.accent}` }}
       />
       <motion.div
         className="journey-when"
@@ -36,8 +40,35 @@ function JourneyItem({ m, index }: { m: Milestone; index: number }) {
         <div className="period" style={{ color: m.accent }}>
           {m.period}
         </div>
-        <div className="company">{m.company}</div>
+        {m.url ? (
+          <a
+            className="company company-link"
+            href={m.url}
+            target="_blank"
+            rel="noreferrer"
+            data-cursor="link"
+          >
+            {m.company}
+            <span className="ext">↗</span>
+          </a>
+        ) : (
+          <div className="company">{m.company}</div>
+        )}
         <div className="role">{m.role}</div>
+        {m.client &&
+          (m.client.url ? (
+            <a
+              className="client-link"
+              href={m.client.url}
+              target="_blank"
+              rel="noreferrer"
+              data-cursor="link"
+            >
+              for {m.client.name} ↗
+            </a>
+          ) : (
+            <span className="client-link">for {m.client.name}</span>
+          ))}
       </motion.div>
       <motion.div
         className="journey-card glass holo-border"
@@ -97,6 +128,8 @@ export default function About({
         `Leading frontend for ${exp.client ?? exp.company} — owning a portal that processes 1.5 lakh orders a day, managing a team of 5, and shipping across web, mobile, and backend.`,
       chips: exp.projects.filter((p) => p.featured).map((p) => p.name.split('—')[0].trim()),
       accent: ['#fbbf24', '#8b7bff', '#ff6535'][i] ?? '#ff6535',
+      url: exp.website,
+      client: exp.client ? { name: exp.client, url: exp.clientWebsite } : undefined,
     })),
   ]
 

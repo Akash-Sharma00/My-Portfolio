@@ -4,6 +4,8 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import type { PortfolioData, Project } from '../types'
 import { usePortfolioData } from '../hooks/usePortfolioData'
 import { isMobileProject } from '../lib/projectUtils'
+import DeviceFrame from '../components/DeviceFrame'
+import Tilt from '../components/Tilt'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -130,9 +132,19 @@ export default function CaseStudy() {
       />
 
       <header className="case-hero">
-        <Link to="/" className="case-back" data-cursor="link">
+        <button
+          className="case-back"
+          data-cursor="link"
+          onClick={() => {
+            // Real history back so scroll restoration kicks in; direct visits
+            // (no in-app history) fall back to a fresh navigation home.
+            const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+            if (idx > 0) navigate(-1)
+            else navigate('/')
+          }}
+        >
           ← BACK TO UNIVERSE
-        </Link>
+        </button>
         <div
           style={{
             position: 'absolute',
@@ -141,48 +153,69 @@ export default function CaseStudy() {
             pointerEvents: 'none',
           }}
         />
-        <motion.span
-          className="case-type"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-        >
-          {model.type} · {model.company}
-        </motion.span>
-        <motion.h1
-          initial={{ opacity: 0, y: 60, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 1, delay: 0.2, ease: EASE }}
-        >
-          {model.name}
-        </motion.h1>
-        <motion.p
-          className="case-summary"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
-        >
-          {model.summary}
-        </motion.p>
-        <motion.div
-          className="case-facts"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.9, delay: 0.7 }}
-        >
+        <div className="case-hero-grid">
           <div>
-            <b>{model.company}</b>
-            ORGANISATION
+            <motion.span
+              className="case-type"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+            >
+              {model.type} · {model.company}
+            </motion.span>
+            <motion.h1
+              initial={{ opacity: 0, y: 60, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 1, delay: 0.2, ease: EASE }}
+            >
+              {model.name}
+            </motion.h1>
+            <motion.p
+              className="case-summary"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
+            >
+              {model.summary}
+            </motion.p>
+            <motion.div
+              className="case-facts"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, delay: 0.7 }}
+            >
+              <div>
+                <b>{model.company}</b>
+                ORGANISATION
+              </div>
+              <div>
+                <b>{model.platforms.length > 0 ? model.platforms.join(' · ') : 'Internal'}</b>
+                PLATFORMS
+              </div>
+              <div>
+                <b>{model.tech.slice(0, 3).join(' · ')}</b>
+                CORE STACK
+              </div>
+            </motion.div>
           </div>
-          <div>
-            <b>{model.platforms.length > 0 ? model.platforms.join(' · ') : 'Internal'}</b>
-            PLATFORMS
-          </div>
-          <div>
-            <b>{model.tech.slice(0, 3).join(' · ')}</b>
-            CORE STACK
-          </div>
-        </motion.div>
+
+          <motion.div
+            className="case-hero-visual"
+            initial={{ opacity: 0, y: 70, rotate: 2 }}
+            animate={{ opacity: 1, y: 0, rotate: 0 }}
+            transition={{ duration: 1.1, delay: 0.5, ease: EASE }}
+          >
+            <motion.div
+              style={{ width: '100%', display: 'grid', placeItems: 'center' }}
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Tilt max={8} style={{ width: '100%', display: 'grid', placeItems: 'center' }}>
+                <DeviceFrame project={model} />
+              </Tilt>
+            </motion.div>
+          </motion.div>
+        </div>
       </header>
 
       <Chapter index="01" label="Briefing" title="What this is, and why it exists">
@@ -265,8 +298,16 @@ export default function CaseStudy() {
       {links.length > 0 && (
         <Chapter index={shots.length > 0 ? '05' : '04'} label="Deployment" title="See it in the wild">
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 28 }}>
-            {links.map(([kind, url]) => (
-              <a key={kind} href={url} target="_blank" rel="noreferrer" className="btn btn-ghost" data-cursor="link">
+            {links.map(([kind, url], i) => (
+              <a
+                key={kind}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-ghost btn-pulse"
+                data-cursor="link"
+                style={{ ['--d' as string]: `${i * 0.45}s` }}
+              >
                 <span className="btn-sheen" />
                 {LINK_LABELS[kind] ?? `Open ${kind}`} ↗
               </a>
