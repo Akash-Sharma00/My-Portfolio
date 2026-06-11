@@ -52,7 +52,7 @@ const NEBULA_FRAG = /* glsl */ `
   void main() {
     float d = distance(gl_PointCoord, vec2(0.5));
     float strength = pow(smoothstep(0.5, 0.0, d), 3.5);
-    gl_FragColor = vec4(vColor, strength * 0.16 * vPulse);
+    gl_FragColor = vec4(vColor, strength * 0.13 * vPulse);
   }
 `
 
@@ -97,6 +97,8 @@ function makeCloud(count: number, spread: number, scaleMin: number, scaleMax: nu
 
 function Scene({ density }: { density: number }) {
   const group = useRef<THREE.Group>(null)
+  const starRef = useRef<THREE.Points>(null)
+  const nebRef = useRef<THREE.Points>(null)
   const pointer = useRef({ x: 0, y: 0 })
 
   const { starGeo, starMat, nebGeo, nebMat } = useMemo(() => {
@@ -128,8 +130,10 @@ function Scene({ density }: { density: number }) {
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
-    starMat.uniforms.uTime.value = t
-    nebMat.uniforms.uTime.value = t
+    const sm = starRef.current?.material as THREE.ShaderMaterial | undefined
+    const nm = nebRef.current?.material as THREE.ShaderMaterial | undefined
+    if (sm) sm.uniforms.uTime.value = t
+    if (nm) nm.uniforms.uTime.value = t
 
     // Lerped mouse parallax
     pointer.current.x += (state.pointer.x - pointer.current.x) * Math.min(delta * 2.5, 1)
@@ -149,8 +153,8 @@ function Scene({ density }: { density: number }) {
 
   return (
     <group ref={group}>
-      <points geometry={starGeo} material={starMat} />
-      <points geometry={nebGeo} material={nebMat} />
+      <points ref={starRef} geometry={starGeo} material={starMat} />
+      <points ref={nebRef} geometry={nebGeo} material={nebMat} />
     </group>
   )
 }

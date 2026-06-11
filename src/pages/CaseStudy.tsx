@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import type { PortfolioData, Project } from '../types'
 import { usePortfolioData } from '../hooks/usePortfolioData'
-import { isMobileProject } from '../components/DeviceFrame'
+import { isMobileProject } from '../lib/projectUtils'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 

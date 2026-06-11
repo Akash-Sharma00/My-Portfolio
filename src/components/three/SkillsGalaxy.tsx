@@ -106,8 +106,9 @@ function SkillNode({
     const cur = ref.current.scale.y
     const next = cur + (target - cur) * Math.min(delta * 9, 1)
     ref.current.scale.set(next * aspect, next, 1)
+    const mat = ref.current.material as THREE.SpriteMaterial
     const targetOpacity = dimmed ? 0.14 : 1
-    material.opacity += (targetOpacity - material.opacity) * Math.min(delta * 7, 1)
+    mat.opacity += (targetOpacity - mat.opacity) * Math.min(delta * 7, 1)
   })
 
   const selection: GalaxySelection = { skill: def.skill, category: def.category, color: def.color }
@@ -157,6 +158,7 @@ function Ring({
   onHover: (sel: GalaxySelection | null) => void
 }) {
   const spinner = useRef<THREE.Group>(null)
+  const lineRef = useRef<THREE.LineLoop>(null)
 
   const orbitGeo = useMemo(() => {
     const pts: THREE.Vector3[] = []
@@ -179,13 +181,13 @@ function Ring({
 
   useFrame((_, delta) => {
     if (spinner.current) spinner.current.rotation.y += delta * speed
-    orbitMat.opacity += ((dimmed ? 0.04 : 0.18) - orbitMat.opacity) * Math.min(delta * 7, 1)
+    const mat = lineRef.current?.material as THREE.LineBasicMaterial | undefined
+    if (mat) mat.opacity += ((dimmed ? 0.04 : 0.18) - mat.opacity) * Math.min(delta * 7, 1)
   })
 
   return (
     <group rotation={tilt}>
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <lineLoop geometry={orbitGeo} material={orbitMat} />
+      <lineLoop ref={lineRef} geometry={orbitGeo} material={orbitMat} />
       <group ref={spinner}>
         {nodes.map((def) => (
           <SkillNode

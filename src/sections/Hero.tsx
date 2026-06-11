@@ -10,7 +10,7 @@ import {
 import type { Personal } from '../types'
 import Tilt from '../components/Tilt'
 import Magnetic from '../components/Magnetic'
-import { useLenis, scrollToSection } from '../lib/SmoothScroll'
+import { useLenis, scrollToSection } from '../lib/lenis'
 import { useIsCoarsePointer } from '../hooks/useMedia'
 
 const EASE = [0.16, 1, 0.3, 1] as const

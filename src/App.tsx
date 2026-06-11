@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
-import SmoothScroll, { useLenis } from './lib/SmoothScroll'
+import SmoothScroll from './lib/SmoothScroll'
+import { useLenis } from './lib/lenis'
 import { loadPortfolio } from './hooks/usePortfolioData'
 import Cursor from './components/Cursor'
 import Navbar from './components/Navbar'
@@ -42,6 +43,7 @@ export default function App() {
         <Suspense fallback={null}>
           <Universe />
         </Suspense>
+        <div className="vignette" />
         <div className="grain" />
         <Cursor />
         {booted && (

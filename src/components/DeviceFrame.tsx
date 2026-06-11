@@ -1,8 +1,5 @@
 import type { Project } from '../types'
-
-export function isMobileProject(p: { links: Project['links']; type?: string }) {
-  return Boolean((p.links.playstore || p.links.appstore) && !p.links.live)
-}
+import { isMobileProject } from '../lib/projectUtils'
 
 export function BrowserFrame({ src, url, alt }: { src: string; url?: string; alt: string }) {
   return (

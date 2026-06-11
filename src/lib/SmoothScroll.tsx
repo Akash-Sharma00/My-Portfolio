@@ -1,26 +1,11 @@
-import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import Lenis from 'lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { usePrefersReducedMotion } from '../hooks/useMedia'
+import { LenisContext } from './lenis'
 
 gsap.registerPlugin(ScrollTrigger)
-
-type LenisRef = { current: Lenis | null }
-
-const LenisContext = createContext<LenisRef>({ current: null })
-
-export function useLenis() {
-  return useContext(LenisContext)
-}
-
-export function scrollToSection(lenis: Lenis | null, target: string) {
-  if (lenis) {
-    lenis.scrollTo(target, { offset: -90, duration: 1.6 })
-  } else {
-    document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' })
-  }
-}
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)

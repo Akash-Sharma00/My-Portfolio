@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useLenis, scrollToSection } from '../lib/SmoothScroll'
+import { useLenis, scrollToSection } from '../lib/lenis'
 
 const LINKS = [
   { id: 'home', label: 'Home' },

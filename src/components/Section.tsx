@@ -40,5 +40,3 @@ export function SectionHead({
     </motion.div>
   )
 }
-
-export { rise }
