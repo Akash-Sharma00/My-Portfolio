@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
+import { Analytics } from '@vercel/analytics/react';
+
 import Home from './pages/Home'
 import ProjectDetail from './pages/ProjectDetail'
 import ScrollToTop from './components/ScrollToTop'
@@ -16,6 +18,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <Analytics />
         <ScrollProgress />
         <ScrollToTop />
         <Routes>
