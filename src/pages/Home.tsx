@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigationType } from 'react-router-dom'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { usePortfolioData } from '../hooks/usePortfolioData'
 import { useLenis, scrollToSection } from '../lib/lenis'
@@ -14,6 +14,7 @@ import Contact from '../sections/Contact'
 export default function Home() {
   const { data, error } = usePortfolioData()
   const location = useLocation()
+  const navType = useNavigationType()
   const lenis = useLenis()
 
   // Layout settles after data + images arrive — recompute pinned scroll scenes
@@ -23,13 +24,15 @@ export default function Home() {
     return () => clearTimeout(t)
   }, [data])
 
-  // Arriving from another page with a target section
+  // Arriving from another page with a target section. Only on fresh
+  // navigations — the state sticks to the history entry, and honouring it on
+  // back/forward would yank the user away from their restored position.
   useEffect(() => {
     const target = (location.state as { scrollTo?: string } | null)?.scrollTo
-    if (!data || !target) return
+    if (!data || !target || navType === 'POP') return
     const t = setTimeout(() => scrollToSection(lenis.current, `#${target}`), 700)
     return () => clearTimeout(t)
-  }, [data, location.state, lenis])
+  }, [data, location.state, navType, lenis])
 
   if (error) {
     return (

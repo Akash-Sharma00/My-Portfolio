@@ -840,7 +840,10 @@
         "pubdev": "https://pub.dev/packages/alphabet_animation"
       },
       "highlight": "Published on pub.dev",
-      "color": "#34d399"
+      "color": "#34d399",
+      "screenshots": [
+        "/images/alphabet-animation/01.jpg"
+      ]
     },
     {
       "id": "small-solution",
@@ -863,10 +866,21 @@
         "Dual login modes (worker / recruiter)"
       ],
       "links": {
-        "github": "#"
+        "github": "https://github.com/Akash-Sharma00/Small_Solutions"
       },
       "highlight": "Built in native Java before Flutter days",
-      "color": "#fbbf24"
+      "color": "#fbbf24",
+      "screenshots": [
+        "/images/small-solution/01.jpg",
+        "/images/small-solution/02.jpg",
+        "/images/small-solution/03.jpg",
+        "/images/small-solution/04.jpg",
+        "/images/small-solution/05.jpg",
+        "/images/small-solution/06.jpg",
+        "/images/small-solution/07.jpg",
+        "/images/small-solution/08.jpg",
+        "/images/small-solution/09.jpg"
+      ]
     },
     {
       "id": "chat-with-documents",

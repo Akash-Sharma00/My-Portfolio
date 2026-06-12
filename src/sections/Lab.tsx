@@ -19,6 +19,11 @@ export default function Lab({
 }) {
   const navigate = useNavigate()
 
+  // Projects with visual records lead; original order preserved within each group
+  const ordered = [...projects].sort(
+    (a, b) => Number(Boolean(b.screenshots?.length)) - Number(Boolean(a.screenshots?.length)),
+  )
+
   return (
     <section id="lab" className="section">
       <SectionHead
@@ -32,7 +37,7 @@ export default function Lab({
       />
 
       <div className="lab-grid">
-        {projects.map((p, i) => (
+        {ordered.map((p, i) => (
           <motion.div
             key={p.id}
             initial={{ opacity: 0, y: 50 }}
@@ -56,12 +61,26 @@ export default function Lab({
                   }
                 }}
               >
-                {p.screenshots && p.screenshots.length > 0 && (
-                  <div className="lc-shot">
-                    <img src={p.screenshots[0]} alt={`${p.name} preview`} loading="lazy" />
-                    <span className="lc-shot-count">◉ {p.screenshots.length} shots</span>
-                  </div>
-                )}
+                <div className="lc-shot">
+                  {p.screenshots && p.screenshots.length > 0 ? (
+                    <>
+                      <img src={p.screenshots[0]} alt={`${p.name} preview`} loading="lazy" />
+                      <span className="lc-shot-count">◉ {p.screenshots.length} shots</span>
+                    </>
+                  ) : (
+                    <div className="lc-shot-fallback" aria-hidden>
+                      <span className="ph-glyph">
+                        {p.name
+                          .split(/\s+/)
+                          .slice(0, 2)
+                          .map((w) => w[0])
+                          .join('')
+                          .toUpperCase()}
+                      </span>
+                      <span className="ph-cat">{p.category ?? p.type}</span>
+                    </div>
+                  )}
+                </div>
                 <span className="lc-cat">{p.type}</span>
                 <h4>{p.name}</h4>
                 <p>{p.summary}</p>

@@ -7,6 +7,7 @@ import {
   useTransform,
   type Variants,
 } from 'framer-motion'
+import { SiFlutter } from 'react-icons/si'
 import type { Personal } from '../types'
 import Tilt from '../components/Tilt'
 import Magnetic from '../components/Magnetic'
@@ -15,7 +16,13 @@ import { useIsCoarsePointer } from '../hooks/useMedia'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
-const ROLES = ['Flutter Engineer', 'Full Stack Developer', 'Product Builder', 'Problem Solver']
+const ROLES: { label: string; color?: string; flutter?: boolean }[] = [
+  { label: 'Flutter Engineer', flutter: true },
+  { label: 'Sr. Software Engineer', color: '#ff6535' },
+  { label: 'Full Stack Developer', color: '#8b7bff' },
+  { label: 'Product Builder', color: '#fbbf24' },
+  { label: 'Problem Solver', color: '#4ade80' },
+]
 
 /* Each role enters with its own choreography */
 const ROLE_VARIANTS: Variants[] = [
@@ -64,19 +71,39 @@ function RoleRotator() {
     const id = setInterval(() => setIndex((i) => (i + 1) % ROLES.length), 2600)
     return () => clearInterval(id)
   }, [])
+  const role = ROLES[index]
+
   return (
     <div className="hero-roles" style={{ perspective: 600 }}>
-      <span className="role-index">{String(index + 1).padStart(2, '0')} / 04</span>
+      <span className="role-index">
+        {String(index + 1).padStart(2, '0')} / {String(ROLES.length).padStart(2, '0')}
+      </span>
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
-          variants={ROLE_VARIANTS[index]}
+          className="role-text"
+          variants={ROLE_VARIANTS[index % ROLE_VARIANTS.length]}
           initial="initial"
           animate="animate"
           exit="exit"
           style={{ display: 'inline-block' }}
         >
-          {ROLES[index]}
+          {role.flutter ? (
+            <span className="role-flutter">
+              <motion.span
+                className="flutter-icon"
+                animate={{ y: [0, -4, 0], rotate: [0, -10, 0] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <SiFlutter />
+              </motion.span>
+              <span className="flutter-text">{role.label}</span>
+            </span>
+          ) : (
+            <span style={{ color: role.color, textShadow: `0 0 26px ${role.color}66` }}>
+              {role.label}
+            </span>
+          )}
         </motion.span>
       </AnimatePresence>
     </div>
@@ -215,7 +242,7 @@ export default function Hero({ personal }: { personal: Personal }) {
               <div className="holo-card-rows">
                 <div>
                   <span>BASE</span>
-                  <b>{personal.location.split(',')[0]}</b>
+                  <b>{personal.location.split(',').join(' · ')}</b>
                 </div>
                 <div>
                   <span>EXPERIENCE</span>

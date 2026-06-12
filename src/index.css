@@ -786,12 +786,11 @@ button {
 
 .hero-roles {
   margin-top: 18px;
-  height: 34px;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   font-family: var(--font-mono);
-  font-size: clamp(13px, 1.4vw, 16px);
   color: var(--ember);
 }
 
@@ -799,6 +798,44 @@ button {
   color: var(--ink-faint);
   font-size: 11px;
   letter-spacing: 0.2em;
+}
+
+/* The rotating role itself — display type, bigger and glowing */
+.hero-roles .role-text {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 2.3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Signature treatment for the Flutter role: brand-blue shimmer + bobbing logo */
+.role-flutter {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.role-flutter .flutter-icon {
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.85em;
+  color: #54c5f8;
+  filter: drop-shadow(0 0 12px rgba(84, 197, 248, 0.8));
+}
+
+.role-flutter .flutter-text {
+  background: linear-gradient(100deg, #54c5f8 0%, #9fe6ff 25%, #0468d7 50%, #54c5f8 75%, #9fe6ff 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: flutter-shimmer 2.6s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(84, 197, 248, 0.35));
+}
+
+@keyframes flutter-shimmer {
+  to { background-position: -250% 0; }
 }
 
 .hero-ctas {
@@ -1823,8 +1860,56 @@ a.client-link:hover {
   transform-style: preserve-3d;
 }
 
+/* Equal-height cards: stretch through the motion + tilt wrappers */
+.lab-grid > div,
+.lab-grid > div > div {
+  height: 100%;
+}
+
 .lab-card {
   cursor: pointer;
+  height: 100%;
+}
+
+/* Holographic placeholder so imageless cards keep the same media area */
+.lab-card .lc-shot-fallback {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8.5;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 23px, rgba(140, 150, 255, 0.06) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, rgba(140, 150, 255, 0.06) 23px 24px),
+    linear-gradient(rgba(8, 9, 20, 0.82), rgba(8, 9, 20, 0.82)),
+    radial-gradient(ellipse at 50% 0%, var(--pc, #4cd9ed), transparent 75%);
+}
+
+.lab-card .lc-shot-fallback .ph-glyph {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--pc, var(--cyan));
+  text-shadow: 0 0 28px var(--pc, var(--cyan));
+  opacity: 0.92;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.lab-card:hover .lc-shot-fallback .ph-glyph {
+  transform: scale(1.12);
+}
+
+.lab-card .lc-shot-fallback .ph-cat {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
 }
 
 .lab-card .lc-shot {

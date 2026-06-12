@@ -73,21 +73,33 @@ function ScrollRestoration() {
       }
     }
 
-    // Pinned scroll scenes (GSAP) and lazy content settle over a few hundred ms,
-    // so retry until the position sticks instead of trusting the first frame.
+    // Pinned scroll scenes (GSAP) and lazy content settle over a couple of
+    // seconds, so retry until the position sticks instead of trusting the
+    // first frame. The user taking over (wheel/touch/keys) cancels the loop.
+    const DELAYS = [80, 160, 300, 500, 800, 1200]
     const attempt = (n: number) => {
       if (cancelled) return
       restore()
-      if (n < 4 && Math.abs(window.scrollY - target) > 2) {
-        timer = setTimeout(() => attempt(n + 1), [80, 160, 320, 700][n])
+      if (n < DELAYS.length && Math.abs(window.scrollY - target) > 2) {
+        timer = setTimeout(() => attempt(n + 1), DELAYS[n])
       }
     }
+
+    const cancel = () => {
+      cancelled = true
+    }
+    window.addEventListener('wheel', cancel, { passive: true })
+    window.addEventListener('touchstart', cancel, { passive: true })
+    window.addEventListener('keydown', cancel)
 
     const id = requestAnimationFrame(() => attempt(0))
     return () => {
       cancelled = true
       cancelAnimationFrame(id)
       if (timer) clearTimeout(timer)
+      window.removeEventListener('wheel', cancel)
+      window.removeEventListener('touchstart', cancel)
+      window.removeEventListener('keydown', cancel)
     }
   }, [location.key, navType, lenis])
 
