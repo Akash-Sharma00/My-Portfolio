@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
+import { Analytics } from '@vercel/analytics/react'
 import SmoothScroll from './lib/SmoothScroll'
 import { useLenis } from './lib/lenis'
 import { loadPortfolio } from './hooks/usePortfolioData'
@@ -123,6 +124,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <SmoothScroll>
+        <Analytics />
         <AnimatePresence>{!booted && <Loader />}</AnimatePresence>
         <Suspense fallback={null}>
           <Universe />

@@ -1699,7 +1699,19 @@ a.client-link:hover {
   gap: 18px;
 }
 
+/* Make every card fill its grid row so all cards in a row stay uniform */
+.archive-grid > div {
+  display: flex;
+}
+
+.archive-grid a {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
 .archive-card {
+  flex: 1;
   padding: 22px;
   border-radius: var(--radius);
   transition: transform 0.4s var(--ease-out);
